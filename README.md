@@ -15,6 +15,7 @@
 ## 使用技術
 
 - React.js (https://github.com/facebook/react)
+- TypeScript (https://www.typescriptlang.org/)
 - Next.js (https://github.com/vercel/next.js)
 - Firebase (https://firebase.google.com/docs/web/setup?hl=ja)
 
@@ -42,14 +43,22 @@ Todo リストの作成を通じて、React、Next.js 、Firebaseの基礎、git
 また、ポートフォリオアプリとして使えるような機能をみんなで作り上げていく。
 チームメンバー同士でのコードレビュー、毎週MTGでのissueやデザインについての議論など個人開発では行えない内容をカバー。
 
+## 報告について
+
+毎週MTGまでに、やったこと、翌週やることを事前に議事録に記述いただいて、MTGにて発表を行なってもらいます。
+また、チームで話し合いたいことやIssueの要件の相談などもMTGで行うので、アジェンダに記述しおくようにお願いいたします。
+
+- 議事録（Google Document）: https://docs.google.com/document/d/13ySRHhdp15c4zbWxvPwcUY4VKgzaTQ0me66YLxxH8W0/edit?usp=sharing
 
 ## 質問や議論について
 
 Issueや実装に関する質問はプルリクエストもしくは、該当のIssueにてコメントを残した上で、slackでurlを共有しましょう。
-また、Issueなどに関係のない質問は、なるべくDiscussionにまとめて、urlをslackで共有してください。
+また、Issueなどに関係のない質問（gitやgithubの使い方など）は、なるべくDiscussionにまとめて、urlをslackで共有してください。
 
 - Discussion : https://github.com/if-mentor/next_fire_todo_5/discussions/categories/q-a
-- 
+- Issues ： https://github.com/if-mentor/next_fire_todo_5/issues/new/choose
+
+
 ## 環境構築手順
 
 1. クローン作業
