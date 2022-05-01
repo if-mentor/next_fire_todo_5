@@ -8,6 +8,7 @@
 - サポート: 
   - Hiro (hirooutdoor)
   - inoue (toshi-ino)
+  - kanamoto (Takagineer)
 
 - 参加メンバー
 - 
