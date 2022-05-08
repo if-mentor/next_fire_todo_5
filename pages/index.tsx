@@ -2,6 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { Button, Stack } from '@mui/material'
 
 const Home: NextPage = () => {
   return (
@@ -13,6 +14,15 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
+
+        <div>
+          <Stack spacing={2} direction="row">
+            <Button  variant="text">Text</Button>
+            <Button variant="contained">Contained</Button>
+            <Button variant="outlined">Outlined</Button>
+          </Stack>
+        </div>
+
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
