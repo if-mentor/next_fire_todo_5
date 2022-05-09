@@ -30,12 +30,7 @@ export default function CreateTodo() {
       detail: data.get("detail"),
       priority: data.get("priority")
     });
-    
   };
-  const style = {
-    resize: "none",
-
-  }
  
   return (
     <>
@@ -116,7 +111,7 @@ export default function CreateTodo() {
           />
 
 
- 
+          <FormControl >
             <FormLabel id="priority">PRIORITY</FormLabel>
             <RadioGroup
               row
@@ -128,6 +123,7 @@ export default function CreateTodo() {
               <FormControlLabel value="middle" control={<Radio />} label="Middle" />
               <FormControlLabel value="low" control={<Radio />} label="Low" />
             </RadioGroup>
+          </FormControl>
 
             <Box
               sx={{
