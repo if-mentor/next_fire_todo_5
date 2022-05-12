@@ -80,17 +80,17 @@ export default function CreateTodo() {
             sx={{ mt: 1 }}
           >
           <Typography component="h2" variant="h6">TITLE</Typography>
-            <TextField
-              margin="normal"
-              required
-              sx={{
-                width: 800
+            <TextareaAutosize
+              style={{
+                resize: "none",
+                width: 800,
+                height: 50
               }}
-              id="title"
-              label="Text"
-              name="title"
-              autoComplete="title"
-              autoFocus
+                required
+                name="title"
+                id="title"
+                autoComplete="title"
+                placeholder="Text"
             />
           <Typography component="h2" variant="h6">DETAIL</Typography>
           <TextareaAutosize
@@ -104,7 +104,6 @@ export default function CreateTodo() {
             id="detail"
             autoComplete="detail"
             placeholder="Text"
-
           />
           <br />
           <FormControl >
