@@ -1,22 +1,16 @@
 import { TextareaAutosize } from "@material-ui/core";
 import {
-  Avatar,
   Box,
   Button,
-  Checkbox,
   Container,
   CssBaseline,
   FormControl,
   FormControlLabel,
   FormLabel,
-  Grid,
   Radio,
   RadioGroup,
-  TextField,
   Typography,
 } from "@mui/material";
-import type { NextPage } from "next";
-import Link from "next/link";
 import { Header } from "../components/Header";
 
 
