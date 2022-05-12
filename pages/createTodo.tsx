@@ -35,71 +35,68 @@ export default function CreateTodo() {
   return (
     <>
       <Header />
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xl" >
         <CssBaseline />
-        <Box
-          sx={{
-            textAlign: "right"
-          }}
-        >
-          <Button 
-            variant="contained"
+          <Box
             sx={{
-                  mt: 3,
-                  mb: 2,
-                  background: "#68D391",
-                    "&:hover": {
+              marginTop: 8,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+          <Box
+            sx={{
+              marginLeft: 85
+            }}
+          >
+            <Button 
+              variant="contained"
+              sx={{
+                    mt: 3,
+                    mb: 2,
                     background: "#68D391",
-                    opacity: [0.9, 0.8, 0.7],
-                      },
-                  borderRadius: 25
-                    }}
-                  >
-               Back
-          </Button>
-        </Box>
-        <Box
+                      "&:hover": {
+                      background: "#68D391",
+                      opacity: [0.9, 0.8, 0.7],
+                        },
+                    borderRadius: 25
+                      }}
+                    >
+                Back
+            </Button>
+          </Box>
+          <Box
           sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
             alignItems: "left",
           }}
-        >
-
-          <Typography component="h1" variant="h4">
-            NEW TODO
-          </Typography>
-          
-
-          
+          >
+          <Typography component="h1" variant="h4">NEW TODO</Typography>   
+          </Box>    
           <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
             sx={{ mt: 1 }}
           >
-          <Typography component="h2" variant="h6">
-          TITLE
-          </Typography>
+          <Typography component="h2" variant="h6">TITLE</Typography>
             <TextField
               margin="normal"
               required
-              fullWidth
+              sx={{
+                width: 800
+              }}
               id="title"
               label="Text"
               name="title"
               autoComplete="title"
               autoFocus
             />
-          <Typography component="h2" variant="h6">
-          DETAIL
-          </Typography>
-
+          <Typography component="h2" variant="h6">DETAIL</Typography>
           <TextareaAutosize
           style={{
             resize: "none",
-            width: 400,
+            width: 800,
             height: 200
           }}
             required
@@ -109,8 +106,7 @@ export default function CreateTodo() {
             placeholder="Text"
 
           />
-
-
+          <br />
           <FormControl >
             <FormLabel id="priority">PRIORITY</FormLabel>
             <RadioGroup
@@ -124,10 +120,9 @@ export default function CreateTodo() {
               <FormControlLabel value="low" control={<Radio />} label="Low" />
             </RadioGroup>
           </FormControl>
-
             <Box
               sx={{
-                textAlign: "right"
+                marginLeft: 75
                 }}
             >
               <Button
@@ -137,7 +132,7 @@ export default function CreateTodo() {
                       mt: 3,
                       mb: 2,
                       color: "#333333",
-                      background: "#ffebcd",
+                      background: "#fce2ea",
                       "&:hover": {
                         background: "#ffefd5",
                         opacity: [0.9, 0.8, 0.7],
@@ -154,12 +149,12 @@ export default function CreateTodo() {
                     sx={{
                       mt: 3,
                       mb: 2,
-                      background: "#32cd32",
+                      background: "#26855A",
                       "&:hover": {
                         background: "#2bb32b",
                         opacity: [0.9, 0.8, 0.7],
                       },
-                      borderRadius: 25
+                      borderRadius: 25,
                     }}
                   >
                     CREATE
@@ -167,7 +162,6 @@ export default function CreateTodo() {
             </Box>
           </Box>
         </Box>
-
       </Container>
     </>
   );
