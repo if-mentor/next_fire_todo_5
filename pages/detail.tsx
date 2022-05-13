@@ -91,9 +91,10 @@ const detail: NextPage = () => {
             <Box>
               <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753" }}>
+                  <TableHead >
+                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
                       Task
+                      <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
                     </TableCell>
                   </TableHead>
                   <TableBody>
@@ -110,8 +111,9 @@ const detail: NextPage = () => {
               <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753" }}>
+                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
                       Task
+                      <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
                     </TableCell>
                   </TableHead>
                   <TableBody>
@@ -128,8 +130,9 @@ const detail: NextPage = () => {
               <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753" }}>
+                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
                       Task
+                      <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
                     </TableCell>
                   </TableHead>
                   <TableBody>
@@ -146,8 +149,9 @@ const detail: NextPage = () => {
               <TableContainer component={Paper} sx={{ border: 1, borderRadius: 4 }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753" }}>
+                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
                       Task
+                      <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
                     </TableCell>
                   </TableHead>
                   <TableBody>
