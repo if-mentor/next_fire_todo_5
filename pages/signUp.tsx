@@ -2,12 +2,9 @@ import {
   Avatar,
   Box,
   Button,
-  Checkbox,
   Container,
   CssBaseline,
   FormControl,
-  FormControlLabel,
-  Grid,
   TextField,
   Typography,
   InputLabel,
@@ -16,8 +13,6 @@ import {
   IconButton,
 } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
-import type { NextPage } from "next";
-import Link from "next/link";
 import { Header } from "../components/Header";
 import { useState } from "react";
 
