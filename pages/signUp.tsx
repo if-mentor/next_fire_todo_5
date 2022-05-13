@@ -26,10 +26,18 @@ export default function SignUp() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const password = data.get("password");
+    const checkPassword = data.get("checkPassword");
+
+    if (password === checkPassword) {
+      console.log({
+        email: data.get("email"),
+        password: data.get("password"),
+      });
+    } else {
+      alert("パスワードが間違っています")
+    }
+    
   };
 
   return (
@@ -79,8 +87,21 @@ export default function SignUp() {
                 }
                 name="password"
                 label="password"
-              />
+              /> 
             </FormControl>
+
+            <TextField
+              type={isVisible ? "text" : "password"}
+              margin="normal"
+              required
+              fullWidth
+              id="checkPassword"
+              label="パスワード(確認用)"
+              name="checkPassword"
+              autoComplete="checkPassword"
+              autoFocus
+            />
+
             <Button
               type="submit"
               fullWidth
