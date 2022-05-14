@@ -13,7 +13,8 @@ const detail: NextPage = () => {
         maxWidth="xl"
       >
       <CssBaseline />
-        <Box sx={{ textAlign: "right", mb: -5}} >
+      <Box className='big'>
+        <Box sx={{ textAlign: "right", marginLeft: "auto" }} >
           <Button variant="contained" sx={{ mt: 3, mb: 2, mr: 5, background: "#008753", "&:hover": { background: "#68D391", opacity: [0.9, 0.8, 0.7] }, borderRadius: 25, border: 1, borderColor: 'text.primary', fontWeight: "bold", fontSize: 18  }}>
             Comment
           </Button>
@@ -21,9 +22,7 @@ const detail: NextPage = () => {
             Back
           </Button>
         </Box>
-
-      <Box className='big'>
-        <Box>
+        <Box sx={{ display: "flex" }}>
           <Typography
             component="h1"
             variant="h4"
@@ -34,21 +33,25 @@ const detail: NextPage = () => {
           </Typography>
         </Box>
         <Box>
-          <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', overflowX: "auto" }}>
             <Box sx={{ border: 1, borderRadius: 4, p: 2 }}>
               <TableContainer >
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#68D391" }}>
-                      TITLE
-                    </TableCell>
+                    <TableRow>
+                      <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#68D391" }}>
+                        TITLE
+                      </TableCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableCell
-                      sx={{ fontSize: "18px", fontWeight: "bold" }}
-                    >
-                      aaaaaaaaa
-                    </TableCell>
+                    <TableRow>
+                      <TableCell
+                        sx={{ fontSize: "18px", fontWeight: "bold" }}
+                      >
+                        aaaaaaaaa
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -56,16 +59,20 @@ const detail: NextPage = () => {
               <TableContainer >
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#68D391" }}>
-                      DETAIL
-                    </TableCell>
+                    <TableRow>
+                      <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#68D391" }}>
+                        DETAIL
+                      </TableCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableCell
-                      sx={{ fontSize: "18px", fontWeight: "bold", height: "240px", verticalAlign: "top", wordBreak: "break-word"}}
-                    >
-                      aaaahfeihfuhwfiuhewoijfiowejfiojwfijewiofjiowejfioewjiofjwioejifjfiowjeiojf
-                    </TableCell>
+                    <TableRow>
+                      <TableCell
+                        sx={{ fontSize: "18px", fontWeight: "bold", height: "240px", verticalAlign: "top", wordBreak: "break-word"}}
+                      >
+                        aaaahfeihfuhwfiuhewoijfiowejfiojwfijewiofjiowejfioewjiofjwioejifjfiowjeiojf
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -92,76 +99,92 @@ const detail: NextPage = () => {
               <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead >
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
-                      Task
-                      <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
-                    </TableCell>
+                    <TableRow>
+                      <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
+                        Task
+                        <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
+                      </TableCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{ fontSize: "18px", fontWeight: "bold" }}
-                    >
-                      aaaa
-                    </TableCell>
+                    <TableRow>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ fontSize: "18px", fontWeight: "bold" }}
+                      >
+                        aaaa
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
               <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
-                      Task
-                      <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
-                    </TableCell>
+                    <TableRow>
+                      <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
+                        Task
+                        <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
+                      </TableCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{ fontSize: "18px", fontWeight: "bold" }}
-                    >
-                      aaaa
-                    </TableCell>
+                    <TableRow>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ fontSize: "18px", fontWeight: "bold" }}
+                      >
+                        aaaa
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
               <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
-                      Task
-                      <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
-                    </TableCell>
+                    <TableRow>
+                      <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
+                        Task
+                        <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
+                      </TableCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{ fontSize: "18px", fontWeight: "bold" }}
-                    >
-                      aaaa
-                    </TableCell>
+                    <TableRow>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ fontSize: "18px", fontWeight: "bold" }}
+                      >
+                        aaaa
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
               <TableContainer component={Paper} sx={{ border: 1, borderRadius: 4 }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
-                    <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
-                      Task
-                      <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
-                    </TableCell>
+                    <TableRow>
+                      <TableCell sx={{ fontSize: "24px", fontWeight: "bold", background: "#008753", display: "flex", color: "#FFF" }}>
+                        Task
+                        <Typography sx={{ ml: 50, fontWeight: "bold", fontSize: 18, color: "#FFF" }}>2020-11-8 18:55</Typography>
+                      </TableCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      sx={{ fontSize: "18px", fontWeight: "bold" }}
-                    >
-                      aaaa
-                    </TableCell>
+                  <TableRow>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ fontSize: "18px", fontWeight: "bold" }}
+                      >
+                        aaaa
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
