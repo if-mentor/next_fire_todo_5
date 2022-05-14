@@ -35,9 +35,8 @@ export default function SignUp() {
         password: data.get("password"),
       });
     } else {
-      alert("パスワードが間違っています")
+      alert("パスワードが間違っています");
     }
-    
   };
 
   return (
@@ -87,7 +86,7 @@ export default function SignUp() {
                 }
                 name="password"
                 label="password"
-              /> 
+              />
             </FormControl>
 
             <TextField
