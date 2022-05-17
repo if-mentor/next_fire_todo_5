@@ -31,6 +31,7 @@ export default function SignUp() {
 
     if (password === checkPassword) {
       console.log({
+        userName :data.get("userName"),
         email: data.get("email"),
         password: data.get("password"),
       });
@@ -47,16 +48,32 @@ export default function SignUp() {
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}></Avatar>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
           <Typography component="h1" variant="h5">
             サインアップ
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="userName"
+              label="ユーザーネーム"
+              name="userName"
+              autoComplete="userName"
+              autoFocus
+            />
+
             <TextField
               margin="normal"
               required
@@ -69,10 +86,12 @@ export default function SignUp() {
             />
 
             <FormControl sx={{ mt: 2 }} fullWidth variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">パスワード*</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-password">
+                パスワード*
+              </InputLabel>
               <OutlinedInput
                 id="password"
-                type={isVisible ? "text" : "password"}
+                type={isVisible ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -90,7 +109,7 @@ export default function SignUp() {
             </FormControl>
 
             <TextField
-              type={isVisible ? "text" : "password"}
+              type={isVisible ? 'text' : 'password'}
               margin="normal"
               required
               fullWidth
@@ -108,9 +127,9 @@ export default function SignUp() {
               sx={{
                 mt: 3,
                 mb: 2,
-                background: "#68D391",
-                "&:hover": {
-                  background: "#68D391",
+                background: '#68D391',
+                '&:hover': {
+                  background: '#68D391',
                   opacity: [0.9, 0.8, 0.7],
                 },
               }}
@@ -121,5 +140,5 @@ export default function SignUp() {
         </Box>
       </Container>
     </>
-  );
+  )
 }
