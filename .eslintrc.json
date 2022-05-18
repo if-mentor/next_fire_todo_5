@@ -7,13 +7,17 @@
     "browser": true,
     "node": true,
     "es6": true,
-    "jest": true
+    "jest": true,
+    "es2020": true
   },
   "parserOptions": {
     "sourceType": "module",
+    "ecmaVersion": 2020,
     "ecmaFeatures": {
       "jsx": true
-    }
+    },
+    "tsconfigRootDir": "__dirname",
+    "project": ["./tsconfig.eslint.json"]
   },
   "settings": {
     "react": {
@@ -23,6 +27,15 @@
   "rules": {
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
-    "@typescript-eslint/no-explicit-any": "off"
-  }
+    "@typescript-eslint/no-explicit-any": "off",
+    "quotes": [ 2, "double" ]
+  },
+  "overrides": [
+    {
+      "files": [ "src/**/*.js" ],
+      "rules": {
+        "quotes": [ 2, "single" ]
+      }
+    }
+  ]
 }

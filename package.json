@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore ."
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore .",
+    "eslint": "eslint . --fix",
+    "format": "prettier --check ./src",
+    "format:fix": "prettier --write ./src",
+    "prettier-watch": "onchange './pages/*.{js,scss,json,css,ts,tsx}' -- prettier --config ./.prettierrc --write {{changed}}"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
@@ -17,6 +21,7 @@
     "@mui/material": "^5.6.4",
     "firebase": "^9.8.1",
     "next": "12.1.5",
+    "onchange": "^7.1.0",
     "prettier": "^2.6.2",
     "react": "18.0.0",
     "react-dom": "18.0.0",
