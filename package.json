@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore .",
-    "eslint": "eslint . --fix",
+    "lint": "eslint --fix 'src/**/*.ts'",
     "format": "prettier --check ./src",
     "format:fix": "prettier --write ./src",
     "prettier-watch": "onchange './pages/*.{js,scss,json,css,ts,tsx}' -- prettier --config ./.prettierrc --write {{changed}}"
