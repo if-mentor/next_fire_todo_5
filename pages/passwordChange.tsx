@@ -28,7 +28,7 @@ const passwordChange = () => {
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
           <Typography component="h1" variant="h5">
-            新しいパスワード変更
+            パスワード変更
           </Typography>
 
           <Box
@@ -42,7 +42,7 @@ const passwordChange = () => {
                 required
                 fullWidth
                 id="newPassword"
-                label="パスワード"
+                label="新しいパスワード"
                 name="checkPassword"
                 autoComplete="checkPassword"
                 autoFocus
@@ -74,7 +74,7 @@ const passwordChange = () => {
                 },
               }}
             >
-              パスワードを変更
+              パスワードを変更する
             </Button>
           </Box>
         </Box>
