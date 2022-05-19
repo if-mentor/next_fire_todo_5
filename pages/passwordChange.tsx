@@ -28,7 +28,7 @@ const passwordChange = () => {
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
           <Typography component="h1" variant="h5">
-            パスワード変更
+            新しいパスワード変更
           </Typography>
 
           <Box
