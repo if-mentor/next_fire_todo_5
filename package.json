@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint --fix 'src/**/*.ts'",
-    "format": "prettier --check ./src",
-    "format:fix": "prettier --write ./src",
+    "format": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "prettier-watch": "onchange './pages/*.{js,scss,json,css,ts,tsx}' -- prettier --config ./.prettierrc --write {{changed}}"
   },
   "dependencies": {
