@@ -31,9 +31,10 @@ export default function SignUp() {
 
     if (password === checkPassword) {
       console.log({
-        email: data.get('email'),
-        password: data.get('password')
-      })
+        userName :data.get("userName"),
+        email: data.get("email"),
+        password: data.get("password"),
+      });
     } else {
       alert('パスワードが間違っています')
     }
@@ -56,7 +57,23 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             サインアップ
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="userName"
+              label="ユーザーネーム"
+              name="userName"
+              autoComplete="userName"
+              autoFocus
+            />
+
             <TextField
               margin="normal"
               required
@@ -69,7 +86,9 @@ export default function SignUp() {
             />
 
             <FormControl sx={{ mt: 2 }} fullWidth variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">パスワード*</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-password">
+                パスワード*
+              </InputLabel>
               <OutlinedInput
                 id="password"
                 type={isVisible ? 'text' : 'password'}
