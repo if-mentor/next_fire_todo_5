@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore ."
+    "lint": "eslint --fix './src/**/*.{js,ts}' && './pages/**/*.{jsx,tsx}' && prettier --write './src/**/*.{js,ts}' && './pages/**/*.{jsx,tsx}' ",
+    "lint:tsx": "eslint --fix './pages/**/*.{jsx,tsx}' && prettier --write './pages/**/*.{jsx,tsx}'"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
