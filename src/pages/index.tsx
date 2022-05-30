@@ -30,6 +30,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import Link from "next/link";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import { Header } from "../components/Header";
 
 function createData(
   id: number,
@@ -113,6 +114,7 @@ const Home: NextPage = () => {
 
   return (
     <>
+    <Header />
       <Container
         component="main"
         sx={{
