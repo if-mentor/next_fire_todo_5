@@ -2,12 +2,14 @@ import { useState } from "react";
 import type { NextPage } from "next";
 import {
   Box,
+  Button,
   Container,
   CssBaseline,
   FormControl,
   IconButton,
   InputBase,
   MenuItem,
+  Modal,
   Pagination,
   Paper,
   Select,
@@ -21,27 +23,30 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import RestoreFromTrashOutlinedIcon from "@mui/icons-material/RestoreFromTrashOutlined";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-
-import { Header } from "../../components/Header";
+import Link from "next/link";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 function createData(
+  id: number,
   task: string,
   status: string,
   priority: string,
   create: string,
   update: string
 ) {
-  return { task, status, priority, create, update };
+  return { id, task, status, priority, create, update };
 }
+
+
 
 const rows = [
   createData(
+    1,
     "Github上に静的サイトをホスティングする",
     "NOT STARTED",
     "High",
@@ -49,6 +54,7 @@ const rows = [
     "2020-11-8 18:55"
   ),
   createData(
+    2,
     "ReactでTodoサイトを作成する",
     "DOING",
     "Low",
@@ -56,6 +62,7 @@ const rows = [
     "2020-11-8 18:56"
   ),
   createData(
+    3,
     "Firestore Hostingを学習する",
     "DONE",
     "Middle",
@@ -63,6 +70,7 @@ const rows = [
     "2020-11-8 18:57"
   ),
   createData(
+    4,
     "感謝の正拳突き",
     "DOING",
     "High",
@@ -70,18 +78,20 @@ const rows = [
     "2020-11-8 18:58"
   ),
   createData(
+    5,
     "二重の極み",
     "DONE",
     "High",
     "2020-11-8 18:59",
     "2020-11-8 18:59"
   ),
-  createData("魔封波", "DOING", "Low", "2020-11-8 19:00", "2020-11-8 19:00"),
+  createData(6, "魔封波", "DOING", "Low", "2020-11-8 19:00", "2020-11-8 19:00"),
 ];
 
 const Home: NextPage = () => {
   const [status, setStatus] = useState("NONE");
   const [priority, setPriority] = useState("None");
+
 
   const statusChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
@@ -103,7 +113,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Header />
       <Container
         component="main"
         sx={{
@@ -256,7 +265,8 @@ const Home: NextPage = () => {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow sx={{ background: "#68D391" }}>
-                <TableCell sx={{ fontSize: "24px", fontWeight: "bold" }}>
+                <TableCell sx={{ fontSize: "24px", fontWeight: "bold" }}
+                >
                   Task
                 </TableCell>
                 <TableCell
@@ -312,6 +322,7 @@ const Home: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
+              {/* <Inner /> */}
               {rows.map((row) => (
                 <TableRow
                   key={row.create}
@@ -321,13 +332,15 @@ const Home: NextPage = () => {
                     },
                   }}
                 >
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontSize: "18px", fontWeight: "bold" }}
-                  >
-                    {row.task}
-                  </TableCell>
+                    <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ fontSize: "18px", fontWeight: "bold" }}
+                      >
+                        <Link href={`/todo/${row.id}`} >
+                          <a>{row.task}</a>
+                        </Link>
+                    </TableCell>
                   <TableCell align="right">{todoStatus(row.status)}</TableCell>
                   <TableCell align="right">
                     <FormControl fullWidth>
@@ -454,5 +467,6 @@ const icon = {
   width: "100%",
   height: "100%",
 };
+
 
 export default Home;
