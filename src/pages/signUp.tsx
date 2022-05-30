@@ -13,7 +13,6 @@ import {
   IconButton,
 } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
-import { Header } from "../../components/Header";
 import { useState } from "react";
 
 export default function SignUp() {
@@ -42,7 +41,6 @@ export default function SignUp() {
 
   return (
     <>
-      <Header />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box

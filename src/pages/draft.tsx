@@ -25,8 +25,6 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import SendIcon from '@mui/icons-material/Send';
-
-import { Header } from "../../components/Header";
 import Link from "next/link";
 
 function createData(
@@ -102,7 +100,6 @@ const draft: NextPage = () => {
 
   return (
     <>
-      <Header />
       <Container
         component="main"
         sx={{
