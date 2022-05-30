@@ -28,8 +28,6 @@ import RestoreFromTrashOutlinedIcon from "@mui/icons-material/RestoreFromTrashOu
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
-import { Header } from "../../components/Header";
-
 function createData(
   task: string,
   status: string,
@@ -103,7 +101,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Header />
       <Container
         component="main"
         sx={{

@@ -11,8 +11,6 @@ import {
   RadioGroup,
   Typography,
 } from "@mui/material";
-import { Header } from "../../components/Header";
-
 
 
 export default function CreateTodo() {
@@ -28,7 +26,6 @@ export default function CreateTodo() {
  
   return (
     <>
-      <Header />
       <Container component="main" maxWidth="xl" >
         <CssBaseline />
           <Box

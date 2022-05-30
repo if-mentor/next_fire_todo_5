@@ -1,13 +1,11 @@
 import type { NextPage } from 'next'
 import { Box, Button, CssBaseline, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
-import { Header } from '../../components/Header'
 import EditIcon from '@mui/icons-material/Edit';
 import Container from '@mui/material/Container';
 
 const detail: NextPage = () => {
   return (
     <>
-      <Header />
       <Container
         component="main"
         maxWidth="xl"

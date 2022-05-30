@@ -9,7 +9,6 @@ import {
   Stack,
   styled,
 } from '@mui/material'
-import { Header } from '../../components/Header'
 
 const EditTodo = () => {
   // フォーム送信
@@ -23,7 +22,6 @@ const EditTodo = () => {
 
   return (
     <>
-      <Header />
       <Container component="div">
         <Stack spacing={2} my={3}>
           <Box
