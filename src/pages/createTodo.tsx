@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import { addDoc, collection, doc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 
-import { Header } from "../../components/Header";
 import { db } from "../firebaseConfig";
 
 export default function CreateTodo() {
@@ -72,7 +71,6 @@ export default function CreateTodo() {
 
   return (
     <>
-      <Header />
       <Snackbar open={open} autoHideDuration={6000} anchorOrigin={{ vertical: "top", horizontal: "center" }} onClose={handleClose}>
         <Alert onClose={handleClose} severity="error">
           TITLEが入力されていません。

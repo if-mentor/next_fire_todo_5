@@ -10,9 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import type { NextPage } from "next";
-import Link from "next/link";
-import { Header } from "../../components/Header";
+
 
 export default function Login() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -26,7 +24,6 @@ export default function Login() {
 
   return (
     <>
-      <Header />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
