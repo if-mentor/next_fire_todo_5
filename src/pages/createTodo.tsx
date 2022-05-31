@@ -1,5 +1,9 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import { TextareaAutosize } from "@material-ui/core";
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -9,26 +13,71 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  Snackbar,
   Typography,
 } from "@mui/material";
+import { addDoc, collection, doc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+
 import { Header } from "../../components/Header";
-
-
+import { db } from "../firebaseConfig";
 
 export default function CreateTodo() {
+  const router = useRouter();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      title: data.get("title"),
-      detail: data.get("detail"),
-      priority: data.get("priority")
-    });
+    if (data.get("title") === "") {
+      setOpen(true);
+      return;
+    }
+    const colRef = collection(db, "todos");
+    const buttonName = event.nativeEvent.submitter.name;
+    const checkDraft = buttonName === "draft" ? true : false;
+
+    const firestoreSubmit = async () => {
+      await addDoc(colRef, {
+        id: "yet",
+        title: data.get("title"),
+        detail: data.get("detail"),
+        priority: data.get("priority"),
+        create: serverTimestamp(),
+        update: serverTimestamp(),
+        isDraft: checkDraft,
+        author: "userUID",
+        editor: "userUID",
+      })
+      const q = await query(collection(db, "todos"), where("id", "==", "yet"));
+      const querySnapshot = await getDocs(q);
+      let docId = "";
+      querySnapshot.forEach((doc) => {
+        docId = doc.id;
+      });
+      const updateRef = doc(db, "todos", docId);
+      updateDoc(updateRef, {
+        id: docId,
+      })
+      router.push("/");
+    }
+
+    firestoreSubmit();
   };
- 
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
+
   return (
     <>
       <Header />
+      <Snackbar open={open} autoHideDuration={6000} anchorOrigin={{ vertical: "top", horizontal: "center" }} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          TITLEが入力されていません。
+        </Alert>
+      </Snackbar>
       <Container component="main" maxWidth="xl" >
         <CssBaseline />
           <Box
@@ -44,21 +93,23 @@ export default function CreateTodo() {
               marginLeft: 85
             }}
           >
-            <Button 
-              variant="contained"
-              sx={{
-                    mt: 3,
-                    mb: 2,
-                    background: "#68D391",
-                      "&:hover": {
+            <Link href="/">
+              <Button
+                variant="contained"
+                sx={{
+                      mt: 3,
+                      mb: 2,
                       background: "#68D391",
-                      opacity: [0.9, 0.8, 0.7],
-                        },
-                    borderRadius: 25
-                      }}
-                    >
-                Back
-            </Button>
+                        "&:hover": {
+                        background: "#68D391",
+                        opacity: [0.9, 0.8, 0.7],
+                          },
+                      borderRadius: 25
+                        }}
+                      >
+                  Back
+              </Button>
+            </Link>
           </Box>
           <Box
           sx={{
@@ -106,7 +157,7 @@ export default function CreateTodo() {
               row
               aria-labelledby="priority"
               defaultValue="priority"
-              name="row-radio-buttons-group"
+              name="priority"
             >
               <FormControlLabel value="high" control={<Radio />} label="High" />
               <FormControlLabel value="middle" control={<Radio />} label="Middle" />
@@ -119,39 +170,41 @@ export default function CreateTodo() {
                 }}
             >
               <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{
-                      mt: 3,
-                      mb: 2,
-                      color: "#333333",
-                      background: "#fce2ea",
-                      "&:hover": {
-                        background: "#ffefd5",
-                        opacity: [0.9, 0.8, 0.7],
-                      },
-                      borderRadius: 25 ,
-                      marginRight: 2,
-                    }}
-                  >
-                    DRAFT
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{
-                      mt: 3,
-                      mb: 2,
-                      background: "#26855A",
-                      "&:hover": {
-                        background: "#2bb32b",
-                        opacity: [0.9, 0.8, 0.7],
-                      },
-                      borderRadius: 25,
-                    }}
-                  >
-                    CREATE
-                  </Button>
+                type="submit"
+                name="draft"
+                variant="contained"
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  color: "#333333",
+                  background: "#fce2ea",
+                  "&:hover": {
+                    background: "#ffefd5",
+                    opacity: [0.9, 0.8, 0.7],
+                  },
+                  borderRadius: 25 ,
+                  marginRight: 2,
+                }}
+              >
+                DRAFT
+              </Button>
+              <Button
+                type="submit"
+                name="create"
+                variant="contained"
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  background: "#26855A",
+                  "&:hover": {
+                    background: "#2bb32b",
+                    opacity: [0.9, 0.8, 0.7],
+                  },
+                  borderRadius: 25,
+                }}
+              >
+                CREATE
+              </Button>
             </Box>
           </Box>
         </Box>
