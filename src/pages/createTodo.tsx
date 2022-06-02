@@ -38,6 +38,7 @@ export default function CreateTodo() {
         id: "yet",
         title: data.get("title"),
         detail: data.get("detail"),
+        status: "NOT STARTED",
         priority: data.get("priority"),
         create: serverTimestamp(),
         update: serverTimestamp(),
