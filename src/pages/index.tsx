@@ -27,6 +27,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import RestoreFromTrashOutlinedIcon from "@mui/icons-material/RestoreFromTrashOutlined";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import Link from "next/link";
 
 function createData(
   task: string,
@@ -245,7 +246,9 @@ const Home: NextPage = () => {
                 },
               }}
             >
-              <OpenInNewIcon sx={icon} />
+              <Link href="/createTodo">
+                <OpenInNewIcon sx={icon} />
+              </Link>
             </Box>
           </Box>
         </Box>
