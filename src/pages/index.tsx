@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import {
   Box,
@@ -27,57 +27,47 @@ import SearchIcon from "@mui/icons-material/Search";
 import RestoreFromTrashOutlinedIcon from "@mui/icons-material/RestoreFromTrashOutlined";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-
-function createData(
-  task: string,
-  status: string,
-  priority: string,
-  create: string,
-  update: string
-) {
-  return { task, status, priority, create, update };
-}
-
-const rows = [
-  createData(
-    "Github上に静的サイトをホスティングする",
-    "NOT STARTED",
-    "High",
-    "2020-11-8 18:55",
-    "2020-11-8 18:55"
-  ),
-  createData(
-    "ReactでTodoサイトを作成する",
-    "DOING",
-    "Low",
-    "2020-11-8 18:56",
-    "2020-11-8 18:56"
-  ),
-  createData(
-    "Firestore Hostingを学習する",
-    "DONE",
-    "Middle",
-    "2020-11-8 18:57",
-    "2020-11-8 18:57"
-  ),
-  createData(
-    "感謝の正拳突き",
-    "DOING",
-    "High",
-    "2020-11-8 18:58",
-    "2020-11-8 18:58"
-  ),
-  createData(
-    "二重の極み",
-    "DONE",
-    "High",
-    "2020-11-8 18:59",
-    "2020-11-8 18:59"
-  ),
-  createData("魔封波", "DOING", "Low", "2020-11-8 19:00", "2020-11-8 19:00"),
-];
+import Link from "next/link";
+import { db } from "../firebaseConfig";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { dateFormat } from "../../utils/DataFormat";
 
 const Home: NextPage = () => {
+  const [todos, setTodos] = useState([
+
+    {
+      id: "",
+      title: "",
+      status: "",
+      priority: "",
+      create: "",
+      update: "",
+      isDraft: false
+    },
+  ]);
+
+  const q = query(collection(db, "todos"), orderBy("create"));
+
+  useEffect(() => {
+    const unSub = onSnapshot(q, (querySnapshot) => {
+      setTodos(
+        querySnapshot.docs.map((todo) => (
+          {
+            id: todo.data().id,
+            title: todo.data().title,
+            status: todo.data().status,
+            priority: todo.data().priority,
+            create: dateFormat(todo.data().create),
+            update: dateFormat(todo.data().update),
+            isDraft: todo.data().isDraft
+          }
+        ))
+      );
+    });
+
+    return () => unSub();
+  }, []);
+
   const [status, setStatus] = useState("NONE");
   const [priority, setPriority] = useState("None");
 
@@ -245,7 +235,9 @@ const Home: NextPage = () => {
                 },
               }}
             >
-              <OpenInNewIcon sx={icon} />
+              <Link href="/createTodo">
+                <OpenInNewIcon sx={icon} />
+              </Link>
             </Box>
           </Box>
         </Box>
@@ -309,69 +301,73 @@ const Home: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.create}
-                  sx={{
-                    "&:last-child td, &:last-child th": {
-                      border: 0,
-                    },
-                  }}
-                >
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontSize: "18px", fontWeight: "bold" }}
-                  >
-                    {row.task}
-                  </TableCell>
-                  <TableCell align="right">{todoStatus(row.status)}</TableCell>
-                  <TableCell align="right">
-                    <FormControl fullWidth>
-                      <Select
-                        value={row.priority}
-                        sx={{
-                          border: "2px solid #EC7272",
-                          borderRadius: "15px",
-                          textAlign: "left",
-                          height: "50px",
-                        }}
+              {todos.map((todo) => {
+                if (todo.isDraft === false) {
+                  return(
+                    <TableRow
+                      key={todo.id}
+                      sx={{
+                        "&:last-child td, &:last-child th": {
+                          border: 0,
+                        },
+                      }}
+                    >
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ fontSize: "18px", fontWeight: "bold" }}
                       >
-                        <MenuItem value="Low">Low</MenuItem>
-                        <MenuItem value="Middle">Middle</MenuItem>
-                        <MenuItem value="High">High</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                    {row.create}
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                    {row.update}
-                  </TableCell>
-                  <TableCell align="right">
-                    <EditOutlinedIcon
-                      sx={{
-                        borderRadius: "8px",
-                        marginRight: "10px",
-                        "&:hover": {
-                          background: "gray",
-                          color: "white",
-                        },
-                      }}
-                    />
-                    <DeleteOutlineOutlinedIcon
-                      sx={{
-                        borderRadius: "8px",
-                        "&:hover": {
-                          background: "gray",
-                          color: "white",
-                        },
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+                        {todo.title}
+                      </TableCell>
+                      <TableCell align="right">{todoStatus(todo.status)}</TableCell>
+                      <TableCell align="right">
+                        <FormControl fullWidth>
+                          <Select
+                            value={todo.priority}
+                            sx={{
+                              border: "2px solid #EC7272",
+                              borderRadius: "15px",
+                              textAlign: "left",
+                              height: "50px",
+                            }}
+                          >
+                            <MenuItem value="low">Low</MenuItem>
+                            <MenuItem value="middle">Middle</MenuItem>
+                            <MenuItem value="high">High</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                        {todo.create}
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                        {todo.update}
+                      </TableCell>
+                      <TableCell align="right">
+                        <EditOutlinedIcon
+                          sx={{
+                            borderRadius: "8px",
+                            marginRight: "10px",
+                            "&:hover": {
+                              background: "gray",
+                              color: "white",
+                            },
+                          }}
+                        />
+                        <DeleteOutlineOutlinedIcon
+                          sx={{
+                            borderRadius: "8px",
+                            "&:hover": {
+                              background: "gray",
+                              color: "white",
+                            },
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )
+                }
+              })}
             </TableBody>
           </Table>
         </TableContainer>
