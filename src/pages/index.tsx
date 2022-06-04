@@ -317,7 +317,9 @@ const Home: NextPage = () => {
                         scope="row"
                         sx={{ fontSize: "18px", fontWeight: "bold" }}
                       >
-                        {todo.title}
+                        <Link href={`/todo/${todo.id}`}>
+                          <a>{todo.title}</a>
+                        </Link>
                       </TableCell>
                       <TableCell align="right">{todoStatus(todo.status)}</TableCell>
                       <TableCell align="right">
