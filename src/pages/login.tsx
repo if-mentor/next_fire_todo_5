@@ -8,19 +8,18 @@ import {
   FormControlLabel,
   Grid,
   TextField,
-  Typography,
-} from "@mui/material";
-
+  Typography
+} from '@mui/material'
 
 export default function Login() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
     console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
+      email: data.get('email'),
+      password: data.get('password')
+    })
+  }
 
   return (
     <>
@@ -29,23 +28,16 @@ export default function Login() {
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            {/* <LockOutlinedIcon /> */}
-          </Avatar>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>{/* <LockOutlinedIcon /> */}</Avatar>
           <Typography component="h1" variant="h5">
             ログイン
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -73,11 +65,11 @@ export default function Login() {
               sx={{
                 mt: 3,
                 mb: 2,
-                background: "#68D391",
-                "&:hover": {
-                  background: "#68D391",
-                  opacity: [0.9, 0.8, 0.7],
-                },
+                background: '#68D391',
+                '&:hover': {
+                  background: '#68D391',
+                  opacity: [0.9, 0.8, 0.7]
+                }
               }}
             >
               ログイン
@@ -86,5 +78,5 @@ export default function Login() {
         </Box>
       </Container>
     </>
-  );
+  )
 }

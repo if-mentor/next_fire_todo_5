@@ -10,34 +10,34 @@ import {
   InputLabel,
   OutlinedInput,
   InputAdornment,
-  IconButton,
-} from "@mui/material";
-import { VisibilityOff, Visibility } from "@mui/icons-material";
-import { useState } from "react";
+  IconButton
+} from '@mui/material'
+import { VisibilityOff, Visibility } from '@mui/icons-material'
+import { useState } from 'react'
 
 export default function SignUp() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false)
 
   const togglePassword = () => {
-    setIsVisible((prevState) => !prevState);
-  };
+    setIsVisible((prevState) => !prevState)
+  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const password = data.get("password");
-    const checkPassword = data.get("checkPassword");
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    const password = data.get('password')
+    const checkPassword = data.get('checkPassword')
 
     if (password === checkPassword) {
       console.log({
-        userName :data.get("userName"),
-        email: data.get("email"),
-        password: data.get("password"),
-      });
+        userName: data.get('userName'),
+        email: data.get('email'),
+        password: data.get('password')
+      })
     } else {
-      alert("パスワードが間違っています");
+      alert('パスワードが間違っています')
     }
-  };
+  }
 
   return (
     <>
@@ -48,19 +48,14 @@ export default function SignUp() {
             marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
+            alignItems: 'center'
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
           <Typography component="h1" variant="h5">
             サインアップ
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -84,19 +79,13 @@ export default function SignUp() {
             />
 
             <FormControl sx={{ mt: 2 }} fullWidth variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">
-                パスワード*
-              </InputLabel>
+              <InputLabel htmlFor="outlined-adornment-password">パスワード*</InputLabel>
               <OutlinedInput
                 id="password"
                 type={isVisible ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position="end">
-                    <IconButton
-                      onClick={togglePassword}
-                      aria-label="toggle password visibility"
-                      edge="end"
-                    >
+                    <IconButton onClick={togglePassword} aria-label="toggle password visibility" edge="end">
                       {isVisible ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -128,8 +117,8 @@ export default function SignUp() {
                 background: '#68D391',
                 '&:hover': {
                   background: '#68D391',
-                  opacity: [0.9, 0.8, 0.7],
-                },
+                  opacity: [0.9, 0.8, 0.7]
+                }
               }}
             >
               サインアップ
