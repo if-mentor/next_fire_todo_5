@@ -30,7 +30,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import Link from 'next/link'
 import { db } from '../firebaseConfig'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
-import { dateFormat } from '../../utils/DataFormat'
+import { parseTimestampToDate } from '../utils/DataFormat'
 
 const Home: NextPage = () => {
   const [todos, setTodos] = useState([
@@ -55,8 +55,8 @@ const Home: NextPage = () => {
           title: todo.data().title,
           status: todo.data().status,
           priority: todo.data().priority,
-          create: dateFormat(todo.data().create),
-          update: dateFormat(todo.data().update),
+          create: parseTimestampToDate(todo.data().create, '-'),
+          update: parseTimestampToDate(todo.data().update, '-'),
           isDraft: todo.data().isDraft
         }))
       )
@@ -331,16 +331,18 @@ const Home: NextPage = () => {
                         {todo.update}
                       </TableCell>
                       <TableCell align="right">
-                        <EditOutlinedIcon
-                          sx={{
-                            borderRadius: '8px',
-                            marginRight: '10px',
-                            '&:hover': {
-                              background: 'gray',
-                              color: 'white'
-                            }
-                          }}
-                        />
+                        <Link href={`editTodo?id=${todo.id}`}>
+                          <EditOutlinedIcon
+                            sx={{
+                              borderRadius: '8px',
+                              marginRight: '10px',
+                              '&:hover': {
+                                background: 'gray',
+                                color: 'white'
+                              }
+                            }}
+                          />
+                        </Link>
                         <DeleteOutlineOutlinedIcon
                           sx={{
                             borderRadius: '8px',
