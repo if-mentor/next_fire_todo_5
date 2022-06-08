@@ -15,23 +15,8 @@ import {
 import EditIcon from '@mui/icons-material/Edit'
 import Container from '@mui/material/Container'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useState } from 'react'
 
 const todoId: NextPage = () => {
-  // const router = useRouter();
-  // const todoId: string =
-  //   typeof router.query.id !== "object" &&
-  //   typeof router.query.id !== "undefined"
-  //     ? router.query.id
-  //     : "";
-  // const [title, setTitle] = useState("");
-  // const [detail, setDetail] = useState("");
-  // const [priority, setPriority] = useState("");
-  // const [status, setStatus] = useState("");
-  // const [create, setCreate] = useState("");
-  // const [update, setUpdate] = useState("");
-
   return (
     <>
       <Container component="main" maxWidth="xl">
