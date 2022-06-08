@@ -30,8 +30,7 @@ export default function CreateTodo() {
       return
     }
     const colRef = collection(db, 'todos')
-    const buttonName = event.currentTarget.submitter.name
-    // const buttonName = event.nativeEvent.submitter.name;
+    const buttonName = (event.nativeEvent as any).submitter.name
     const checkDraft = buttonName === 'draft' ? true : false
 
     const firestoreSubmit = async () => {

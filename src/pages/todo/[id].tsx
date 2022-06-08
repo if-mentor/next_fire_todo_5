@@ -16,7 +16,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import Container from '@mui/material/Container'
 import Link from 'next/link'
 
-const todoId: NextPage = ({ post }: any) => {
+const todoId: NextPage = () => {
   return (
     <>
       <Container component="main" maxWidth="xl">
@@ -80,7 +80,7 @@ const todoId: NextPage = ({ post }: any) => {
                     </TableHead>
                     <TableBody>
                       <TableRow>
-                        <TableCell sx={{ fontSize: '18px', fontWeight: 'bold' }}>{post.title}</TableCell>
+                        <TableCell sx={{ fontSize: '18px', fontWeight: 'bold' }}>post title</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -105,7 +105,7 @@ const todoId: NextPage = ({ post }: any) => {
                             wordBreak: 'break-word'
                           }}
                         >
-                          {post.body}
+                          post body
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -272,34 +272,3 @@ const todoId: NextPage = ({ post }: any) => {
 }
 
 export default todoId
-
-export const getStaticPaths = async () => {
-  // 外部APIエンドポイントを呼び出しデータ取得
-  const res = await fetch('https://jsonplaceholder.typicode.com/posts')
-  const posts = await res.json()
-
-  // 事前ビルドしたいパスを指定
-  const paths = posts.map((post: any) => ({
-    params: {
-      // ファイル名と合わせる ※文字列指定
-      id: post.id.toString()
-    }
-  }))
-  // paths：事前ビルドするパス対象を指定するパラメータ
-  // fallback：事前ビルドしたパス以外にアクセスしたときのパラメータ true:カスタム404Pageを表示 false:404pageを表示
-  return { paths, fallback: false }
-}
-
-// paramsには上記pathsで指定した値が入る（1postずつ）
-export const getStaticProps = async ({ params }: any) => {
-  // 外部APIエンドポイントを呼び出しデータ取得
-  const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`)
-  const post = await res.json()
-
-  // ページコンポーネントにpropsとしてに渡す
-  return {
-    props: {
-      post
-    }
-  }
-}
