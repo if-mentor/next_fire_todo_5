@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import type { NextPage } from "next";
+import { useEffect, useState } from 'react'
+import type { NextPage } from 'next'
 import {
   Box,
   Container,
@@ -18,88 +18,83 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
-} from "@mui/material";
-import { styled } from "@mui/system";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import SearchIcon from "@mui/icons-material/Search";
-import RestoreFromTrashOutlinedIcon from "@mui/icons-material/RestoreFromTrashOutlined";
-import SaveAsIcon from "@mui/icons-material/SaveAs";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+  Typography
+} from '@mui/material'
+import { styled } from '@mui/system'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import SearchIcon from '@mui/icons-material/Search'
+import RestoreFromTrashOutlinedIcon from '@mui/icons-material/RestoreFromTrashOutlined'
+import SaveAsIcon from '@mui/icons-material/SaveAs'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import Link from 'next/link'
+import { db } from '../firebaseConfig'
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { parseTimestampToDate } from '../utils/DataFormat'
 
-function createData(
-  task: string,
-  status: string,
-  priority: string,
-  create: string,
-  update: string
-) {
-  return { task, status, priority, create, update };
-}
 
-const rows = [
-  createData(
-    "Github上に静的サイトをホスティングする",
-    "NOT STARTED",
-    "High",
-    "2020-11-8 18:55",
-    "2020-11-8 18:55"
-  ),
-  createData(
-    "ReactでTodoサイトを作成する",
-    "DOING",
-    "Low",
-    "2020-11-8 18:56",
-    "2020-11-8 18:56"
-  ),
-  createData(
-    "Firestore Hostingを学習する",
-    "DONE",
-    "Middle",
-    "2020-11-8 18:57",
-    "2020-11-8 18:57"
-  ),
-  createData(
-    "感謝の正拳突き",
-    "DOING",
-    "High",
-    "2020-11-8 18:58",
-    "2020-11-8 18:58"
-  ),
-  createData(
-    "二重の極み",
-    "DONE",
-    "High",
-    "2020-11-8 18:59",
-    "2020-11-8 18:59"
-  ),
-  createData("魔封波", "DOING", "Low", "2020-11-8 19:00", "2020-11-8 19:00"),
-];
+  
+  const Home: NextPage = () => {
+  const [todos, setTodos] = useState([
+    {
+      id: '',
+      title: '',
+      status: '',
+      priority: '',
+      create: '',
+      update: '',
+      isDraft: false
+    }
+  ])
 
-const Home: NextPage = () => {
-  const [status, setStatus] = useState("NONE");
-  const [priority, setPriority] = useState("None");
+  const q = query(collection(db, 'todos'), orderBy('create'))
+  // const [status, setStatus] = useState("NONE");
+  // const [priority, setPriority] = useState("None");
   const [keyword, setKeyword] = useState('')
-  const [filteredRows, setFilteredRows] = useState(rows)
+  const [filteredRows, setFilteredRows] = useState(todos)
+  useEffect(() => {
+    const unSub = onSnapshot(q, (querySnapshot) => {
+      setTodos(
+        querySnapshot.docs.map((todo) => ({
+          id: todo.data().id,
+          title: todo.data().title,
+          status: todo.data().status,
+          priority: todo.data().priority,
+          create: parseTimestampToDate(todo.data().create, '-'),
+          update: parseTimestampToDate(todo.data().update, '-'),
+          isDraft: todo.data().isDraft
+        }))
+      )
+    })
 
-  const statusChange = (event: SelectChangeEvent) => {
-    setStatus(event.target.value as string);
-  };
-  const priorityChange = (event: SelectChangeEvent) => {
-    setPriority(event.target.value as string);
-  };
+    return () => unSub()
+  }, [])
+
+  const [filteringStatus, setFilteringStatus] = useState('NONE')
+  const [filteringPriority, setFilteringPriority] = useState('None')
+
+  const filteringStatusChange = (event: SelectChangeEvent) => {
+    setFilteringStatus(event.target.value as string)
+  }
+  const filteringPriorityChange = (event: SelectChangeEvent) => {
+    setFilteringPriority(event.target.value as string)
+  }
+  const resetClick = () => {
+    setFilteringStatus('NONE')
+    setFilteringPriority('None')
+    setKeyword("")
+  }
 
   const todoStatus = (status: string) => {
     switch (status) {
-      case "NOT STARTED":
-        return <NotStartedComponent>{status}</NotStartedComponent>;
-      case "DOING":
-        return <DoingComponent>{status}</DoingComponent>;
-      case "DONE":
-        return <DoneComponent>{status}</DoneComponent>;
+      case 'NOT STARTED':
+        return <NotStartedComponent>{status}</NotStartedComponent>
+      case 'DOING':
+        return <DoingComponent>{status}</DoingComponent>
+      case 'DONE':
+        return <DoneComponent>{status}</DoneComponent>
     }
-  };
+  }
 
   const keywordChange = (event: SelectChangeEvent) => {
     setKeyword(event.target.value as string)
@@ -108,14 +103,11 @@ const Home: NextPage = () => {
 
   }
 
-  const resetKeyword = () => {
-    setKeyword("")
-    console.log(keyword)
-  }
-
   useEffect(() => {
     if (keyword === '') {
-      setFilteredRows(rows)
+console.log(todos)
+
+      setFilteredRows(todos)
       return
     }
 
@@ -125,16 +117,15 @@ const Home: NextPage = () => {
       .match(/[^\s]+/g)
 
     if (searchKeywords === null) {
-      setFilteredRows(rows)
+      setFilteredRows(todos)
       return
     }
 
-    const result = rows.filter((rows) =>
-      searchKeywords.every((keyword) => rows.task.toLowerCase().indexOf(keyword) !== -1)
+    const result = todos.filter((todos) =>
+      searchKeywords.every((keyword) => todos.title.toLowerCase().indexOf(keyword) !== -1)
     )
     setFilteredRows(result)
-  }, [keyword])
-
+  }, [keyword, todos])
   return (
     <>
       <Container
@@ -188,7 +179,7 @@ const Home: NextPage = () => {
                 height: '50px'
               }}
             >
-              <Select value={status} onChange={statusChange}>
+              <Select value={filteringStatus} onChange={filteringStatusChange}>
                 <MenuItem value="NONE">- - - - - - -</MenuItem>
                 <MenuItem value="NOT STARTED">NOT STARTED</MenuItem>
                 <MenuItem value="DOING">DOING</MenuItem>
@@ -208,7 +199,7 @@ const Home: NextPage = () => {
                 height: '50px'
               }}
             >
-              <Select value={priority} onChange={priorityChange}>
+              <Select value={filteringPriority} onChange={filteringPriorityChange}>
                 <MenuItem value="None">- - - - - - -</MenuItem>
                 <MenuItem value="Low">Low</MenuItem>
                 <MenuItem value="Middle">Middle</MenuItem>
@@ -225,9 +216,7 @@ const Home: NextPage = () => {
               marginBottom: '8px'
             }}
           >
-            <ResetBtn onClick={resetKeyword} sx={{}}>
-              RESET
-            </ResetBtn>
+            <ResetBtn onClick={resetClick}>RESET</ResetBtn>
           </Box>
           <Box sx={{ display: 'flex' }}>
             <Box
@@ -278,7 +267,9 @@ const Home: NextPage = () => {
                 }
               }}
             >
-              <OpenInNewIcon sx={icon} />
+              <Link href="/createTodo">
+                <OpenInNewIcon sx={icon} />
+              </Link>
             </Box>
           </Box>
         </Box>
@@ -340,66 +331,77 @@ const Home: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {
-                filteredRows.map((row) => (
-                  <TableRow
-                    key={row.create}
-                    sx={{
-                      '&:last-child td, &:last-child th': {
-                        border: 0
-                      }
-                    }}
-                  >
-                    <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                      {row.task}
-                    </TableCell>
-                    <TableCell align="right">{todoStatus(row.status)}</TableCell>
-                    <TableCell align="right">
-                      <FormControl fullWidth>
-                        <Select
-                          value={row.priority}
+              {filteredRows.map((todo: any) => {
+                if (
+                  todo.isDraft === false &&
+                  (filteringStatus === todo.status || filteringStatus === 'NONE') &&
+                  (filteringPriority === todo.priority || filteringPriority === 'None')
+                ) {
+                  return (
+                    <TableRow
+                      key={todo.id}
+                      sx={{
+                        '&:last-child td, &:last-child th': {
+                          border: 0
+                        }
+                      }}
+                    >
+                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                        <Link href={`/todo/${todo.id}`}>
+                          <a>{todo.title}</a>
+                        </Link>
+                      </TableCell>
+                      <TableCell align="right">{todoStatus(todo.status)}</TableCell>
+                      <TableCell align="right">
+                        <FormControl fullWidth>
+                          <Select
+                            value={todo.priority}
+                            sx={{
+                              border: '2px solid #EC7272',
+                              borderRadius: '15px',
+                              textAlign: 'left',
+                              height: '50px'
+                            }}
+                          >
+                            <MenuItem value="Low">Low</MenuItem>
+                            <MenuItem value="Middle">Middle</MenuItem>
+                            <MenuItem value="High">High</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                        {todo.create}
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                        {todo.update}
+                      </TableCell>
+                      <TableCell align="right">
+                        <Link href={`editTodo?id=${todo.id}`}>
+                          <EditOutlinedIcon
+                            sx={{
+                              borderRadius: '8px',
+                              marginRight: '10px',
+                              '&:hover': {
+                                background: 'gray',
+                                color: 'white'
+                              }
+                            }}
+                          />
+                        </Link>
+                        <DeleteOutlineOutlinedIcon
                           sx={{
-                            border: '2px solid #EC7272',
-                            borderRadius: '15px',
-                            textAlign: 'left',
-                            height: '50px'
+                            borderRadius: '8px',
+                            '&:hover': {
+                              background: 'gray',
+                              color: 'white'
+                            }
                           }}
-                        >
-                          <MenuItem value="Low">Low</MenuItem>
-                          <MenuItem value="Middle">Middle</MenuItem>
-                          <MenuItem value="High">High</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-                      {row.create}
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-                      {row.update}
-                    </TableCell>
-                    <TableCell align="right">
-                      <EditOutlinedIcon
-                        sx={{
-                          borderRadius: '8px',
-                          marginRight: '10px',
-                          '&:hover': {
-                            background: 'gray',
-                            color: 'white'
-                          }
-                        }}
-                      />
-                      <DeleteOutlineOutlinedIcon
-                        sx={{
-                          borderRadius: '8px',
-                          '&:hover': {
-                            background: 'gray',
-                            color: 'white'
-                          }
-                        }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )
+                }
+              })}
             </TableBody>
           </Table>
         </TableContainer>
@@ -409,69 +411,69 @@ const Home: NextPage = () => {
       </Container>
     </>
   )
-};
+}
 
-const ResetBtn = styled("button")({
-  background: "#B5B5B5",
-  border: "1px solid black",
-  borderRadius: "50px",
-  color: "black",
-  fontSize: "20px",
-  fontWeight: "bold",
-  height: "50px",
-  padding: "10px 20px",
-  verticalAlign: "bottom",
-  "&:hover": {
-    background: "#858585",
-    color: "white",
-  },
-});
+const ResetBtn = styled('button')({
+  background: '#B5B5B5',
+  border: '1px solid black',
+  borderRadius: '50px',
+  color: 'black',
+  fontSize: '20px',
+  fontWeight: 'bold',
+  height: '50px',
+  padding: '10px 20px',
+  verticalAlign: 'bottom',
+  '&:hover': {
+    background: '#858585',
+    color: 'white'
+  }
+})
 
-const NotStartedComponent = styled("div")({
-  boxSizing: "border-box",
-  background: "#F0FFF4",
-  border: "1px solid rgba(0, 0, 0, 0.8)",
-  borderRadius: "50px",
-  color: "black",
-  fontSize: "12px",
-  fontWeight: "bold",
-  textAlign: "center",
-  padding: "14px 0px",
-});
+const NotStartedComponent = styled('div')({
+  boxSizing: 'border-box',
+  background: '#F0FFF4',
+  border: '1px solid rgba(0, 0, 0, 0.8)',
+  borderRadius: '50px',
+  color: 'black',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  textAlign: 'center',
+  padding: '14px 0px'
+})
 
-const DoingComponent = styled("div")({
-  boxSizing: "border-box",
-  background: "#25855A",
-  border: "1px solid rgba(0, 0, 0, 0.8)",
-  borderRadius: "50px",
-  color: "white",
-  fontSize: "16px",
-  fontWeight: "bold",
-  textAlign: "center",
-  padding: "10px",
-});
+const DoingComponent = styled('div')({
+  boxSizing: 'border-box',
+  background: '#25855A',
+  border: '1px solid rgba(0, 0, 0, 0.8)',
+  borderRadius: '50px',
+  color: 'white',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  textAlign: 'center',
+  padding: '10px'
+})
 
-const DoneComponent = styled("div")({
-  boxSizing: "border-box",
-  background: "#68D391",
-  border: "1px solid rgba(0, 0, 0, 0.8)",
-  borderRadius: "50px",
-  color: "black",
-  fontSize: "16px",
-  fontWeight: "bold",
-  textAlign: "center",
-  padding: "10px",
-});
+const DoneComponent = styled('div')({
+  boxSizing: 'border-box',
+  background: '#68D391',
+  border: '1px solid rgba(0, 0, 0, 0.8)',
+  borderRadius: '50px',
+  color: 'black',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  textAlign: 'center',
+  padding: '10px'
+})
 
 const icon = {
-  positon: "absolute",
-  top: "0",
-  right: "0",
-  left: "0",
-  bottom: "0",
-  margin: "auto",
-  width: "100%",
-  height: "100%",
-};
+  positon: 'absolute',
+  top: '0',
+  right: '0',
+  left: '0',
+  bottom: '0',
+  margin: 'auto',
+  width: '100%',
+  height: '100%'
+}
 
-export default Home;
+export default Home

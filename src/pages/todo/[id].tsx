@@ -14,8 +14,9 @@ import {
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import Container from '@mui/material/Container'
+import Link from 'next/link'
 
-const detail: NextPage = () => {
+const todoId: NextPage = () => {
   return (
     <>
       <Container component="main" maxWidth="xl">
@@ -57,7 +58,7 @@ const detail: NextPage = () => {
                 fontSize: 18
               }}
             >
-              Back
+              <Link href="/">Back</Link>
             </Button>
           </Box>
           <Box sx={{ display: 'flex' }}>
@@ -79,12 +80,11 @@ const detail: NextPage = () => {
                     </TableHead>
                     <TableBody>
                       <TableRow>
-                        <TableCell sx={{ fontSize: '18px', fontWeight: 'bold' }}>aaaaaaaaa</TableCell>
+                        <TableCell sx={{ fontSize: '18px', fontWeight: 'bold' }}>post title</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
                 </TableContainer>
-
                 <TableContainer>
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -105,7 +105,7 @@ const detail: NextPage = () => {
                             wordBreak: 'break-word'
                           }}
                         >
-                          aaaahfeihfuhwfiuhewoijfiowejfiojwfijewiofjiowejfioewjiofjwioejifjfiowjeiojf
+                          post body
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -144,9 +144,7 @@ const detail: NextPage = () => {
                   </Box>
                 </Box>
               </Box>
-
               <Box component="span" sx={{ p: 2 }} />
-
               <Box>
                 <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -273,4 +271,4 @@ const detail: NextPage = () => {
   )
 }
 
-export default detail
+export default todoId
