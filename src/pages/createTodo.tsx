@@ -43,6 +43,7 @@ export default function CreateTodo() {
         create: serverTimestamp(),
         update: serverTimestamp(),
         isDraft: checkDraft,
+        isTrash: false,
         author: 'userUID',
         editor: 'userUID'
       })

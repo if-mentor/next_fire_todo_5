@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
+import Link from 'next/link'
+
 import {
   Box,
   Container,
@@ -27,9 +29,8 @@ import SearchIcon from '@mui/icons-material/Search'
 import RestoreFromTrashOutlinedIcon from '@mui/icons-material/RestoreFromTrashOutlined'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import Link from 'next/link'
 import { db } from '../firebaseConfig'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy, query, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
 
 const Home: NextPage = () => {
@@ -45,7 +46,7 @@ const Home: NextPage = () => {
     }
   ])
 
-  const q = query(collection(db, 'todos'), orderBy('create'))
+  const q = query(collection(db, 'todos'), where('isDraft', '==', false), orderBy('create'))
 
   useEffect(() => {
     const unSub = onSnapshot(q, (querySnapshot) => {
@@ -77,6 +78,14 @@ const Home: NextPage = () => {
   const resetClick = () => {
     setFilteringStatus('NONE')
     setFilteringPriority('None')
+  }
+
+  const trashTodo = (id: string) => {
+    ;(async () => {
+      await updateDoc(doc(db, 'todos', id), {
+        isDraft: true
+      })
+    })()
   }
 
   const todoStatus = (status: string) => {
@@ -197,7 +206,9 @@ const Home: NextPage = () => {
                 }
               }}
             >
-              <RestoreFromTrashOutlinedIcon sx={icon} />
+              <Link href="/delete">
+                <RestoreFromTrashOutlinedIcon sx={icon} />
+              </Link>
             </Box>
             <Box
               mr={2}
@@ -338,28 +349,29 @@ const Home: NextPage = () => {
                       <TableCell align="right" sx={{ fontWeight: 'bold' }}>
                         {todo.update}
                       </TableCell>
-                      <TableCell align="right">
-                        <Link href={`editTodo?id=${todo.id}`}>
-                          <EditOutlinedIcon
-                            sx={{
-                              borderRadius: '8px',
-                              marginRight: '10px',
-                              '&:hover': {
-                                background: 'gray',
-                                color: 'white'
-                              }
-                            }}
-                          />
-                        </Link>
-                        <DeleteOutlineOutlinedIcon
+                      <TableCell align="center">
+                        <IconButton
+                          href={`editTodo?id=${todo.id}`}
                           sx={{
-                            borderRadius: '8px',
                             '&:hover': {
                               background: 'gray',
                               color: 'white'
                             }
                           }}
-                        />
+                        >
+                          <EditOutlinedIcon />
+                        </IconButton>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: 'gray',
+                              color: 'white'
+                            }
+                          }}
+                          onClick={() => trashTodo(todo.id)}
+                        >
+                          <DeleteOutlineOutlinedIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   )
