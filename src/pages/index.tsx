@@ -75,9 +75,9 @@ const Home: NextPage = () => {
     setFilteringPriority(event.target.value as string)
   }
   const resetClick = () => {
-    setFilteringStatus("NONE")
-    setFilteringPriority("None")
-  };
+    setFilteringStatus('NONE')
+    setFilteringPriority('None')
+  }
 
   const todoStatus = (status: string) => {
     switch (status) {
@@ -297,8 +297,8 @@ const Home: NextPage = () => {
               {todos.map((todo) => {
                 if (
                   todo.isDraft === false &&
-                  (filteringStatus === todo.status || filteringStatus === "NONE") &&
-                  (filteringPriority === todo.priority || filteringPriority === "None" )
+                  (filteringStatus === todo.status || filteringStatus === 'NONE') &&
+                  (filteringPriority === todo.priority || filteringPriority === 'None')
                 ) {
                   return (
                     <TableRow
