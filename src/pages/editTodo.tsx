@@ -33,7 +33,7 @@ const EditTodo = () => {
   useEffect(() => {
     // データ取得
     if (id !== undefined) {
-      (async () => {
+      ;(async () => {
         const docSnap = await getDoc(doc(db, rootDir, id as string))
         docSnap.exists() && setTodo({ ...(docSnap.data() as Todo) })
       })()
@@ -69,7 +69,7 @@ const EditTodo = () => {
     }
 
     if (id !== undefined && todo != null) {
-      (async () => {
+      ;(async () => {
         await updateDoc(doc(db, rootDir, id as string), {
           title: todo.title,
           detail: todo.detail,

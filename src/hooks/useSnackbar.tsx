@@ -22,7 +22,7 @@ const useSnackbar = () => {
         {...props}
       >
         <Alert onClose={closeSnackbar} severity="error">
-          { message }
+          {message}
         </Alert>
       </Snackbar>
     )
