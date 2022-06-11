@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import {
   Box,
@@ -80,6 +80,8 @@ const rows = [
 const Home: NextPage = () => {
   const [status, setStatus] = useState("NONE");
   const [priority, setPriority] = useState("None");
+  const [keyword, setKeyword] = useState('')
+  const [filteredRows, setFilteredRows] = useState(rows)
 
   const statusChange = (event: SelectChangeEvent) => {
     setStatus(event.target.value as string);
@@ -99,62 +101,91 @@ const Home: NextPage = () => {
     }
   };
 
+  const keywordChange = (event: SelectChangeEvent) => {
+    setKeyword(event.target.value as string)
+    console.log(keyword)
+   
+
+  }
+
+  const resetKeyword = () => {
+    setKeyword("")
+    console.log(keyword)
+  }
+
+  useEffect(() => {
+    if (keyword === '') {
+      setFilteredRows(rows)
+      return
+    }
+
+    const searchKeywords = keyword
+      .trim()
+      .toLowerCase()
+      .match(/[^\s]+/g)
+
+    if (searchKeywords === null) {
+      setFilteredRows(rows)
+      return
+    }
+
+    const result = rows.filter((rows) =>
+      searchKeywords.every((keyword) => rows.task.toLowerCase().indexOf(keyword) !== -1)
+    )
+    setFilteredRows(result)
+  }, [keyword])
+
   return (
     <>
       <Container
         component="main"
         sx={{
-          "& .MuiOutlinedInput-notchedOutline": {
-            border: "none",
-          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            border: 'none'
+          }
         }}
       >
         <CssBaseline />
-        <Typography
-          component="h1"
-          variant="h4"
-          mt={3}
-          mb={2}
-          sx={{ fontWeight: "bold" }}
-        >
+        <Typography component="h1" variant="h4" mt={3} mb={2} sx={{ fontWeight: 'bold' }}>
           TODO LIST
         </Typography>
-        <Box mb={3} sx={{ display: "flex", overflowX: "auto" }}>
-          <Box mr={3} sx={{ width: "190px" }}>
+        <Box mb={3} sx={{ display: 'flex', overflowX: 'auto' }}>
+          <Box mr={3} sx={{ width: '190px' }}>
             <Typography variant="h6">SEARCH</Typography>
             <Paper
               component="form"
               sx={{
-                p: "2px 4px",
-                display: "flex",
-                alignItems: "center",
-                border: "1px solid black",
-                borderRadius: "10px",
-                boxShadow: "none",
-                marginTop: "16px",
-                marginBottom: "8px",
+                p: '2px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                border: '1px solid black',
+                borderRadius: '10px',
+                boxShadow: 'none',
+                marginTop: '16px',
+                marginBottom: '8px'
               }}
             >
               <InputBase
-                sx={{ ml: 1, flex: 1, fontWeight: "bold" }}
+                onChange={keywordChange}
+                sx={{ ml: 1, flex: 1, fontWeight: 'bold' }}
                 placeholder="Text"
-                inputProps={{ "aria-label": "search todo text" }}
+                inputProps={{ 'aria-label': 'search todo text' }}
               />
-              <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
-                <SearchIcon />
-              </IconButton>
+            <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+              <SearchIcon />
+            </IconButton>
             </Paper>
           </Box>
-          <Box mr={3} sx={{ width: "190px" }}>
+          <Box mr={3} sx={{ width: '190px' }}>
             <Typography variant="h6">STATUS</Typography>
             <FormControl
               fullWidth
               sx={{
-                border: "1px solid black",
-                borderRadius: "10px",
-                marginTop: "16px",
-                marginBottom: "8px",
-                height: "50px",
+                border: '1px solid black',
+                borderRadius: '10px',
+                marginTop: '16px',
+                marginBottom: '8px',
+                height: '50px'
               }}
             >
               <Select value={status} onChange={statusChange}>
@@ -165,16 +196,16 @@ const Home: NextPage = () => {
               </Select>
             </FormControl>
           </Box>
-          <Box mr={3} sx={{ width: "190px" }}>
+          <Box mr={3} sx={{ width: '190px' }}>
             <Typography variant="h6">PRIORITY</Typography>
             <FormControl
               fullWidth
               sx={{
-                marginTop: "16px",
-                marginBottom: "8px",
-                border: "1px solid black",
-                borderRadius: "10px",
-                height: "50px",
+                marginTop: '16px',
+                marginBottom: '8px',
+                border: '1px solid black',
+                borderRadius: '10px',
+                height: '50px'
               }}
             >
               <Select value={priority} onChange={priorityChange}>
@@ -188,28 +219,30 @@ const Home: NextPage = () => {
           <Box
             mr={3}
             sx={{
-              width: "190px",
-              display: "flex",
-              alignItems: "flex-end",
-              marginBottom: "8px",
+              width: '190px',
+              display: 'flex',
+              alignItems: 'flex-end',
+              marginBottom: '8px'
             }}
           >
-            <ResetBtn sx={{}}>RESET</ResetBtn>
+            <ResetBtn onClick={resetKeyword} sx={{}}>
+              RESET
+            </ResetBtn>
           </Box>
-          <Box sx={{ display: "flex" }}>
+          <Box sx={{ display: 'flex' }}>
             <Box
               mr={2}
               sx={{
-                background: "#F6E05E",
-                border: "8px solid #F6E05E",
-                borderRadius: "30px",
-                height: "50px",
-                width: "50px",
-                "&:hover": {
-                  background: "#ccb94e",
-                  borderColor: "#ccb94e",
-                  color: "white",
-                },
+                background: '#F6E05E',
+                border: '8px solid #F6E05E',
+                borderRadius: '30px',
+                height: '50px',
+                width: '50px',
+                '&:hover': {
+                  background: '#ccb94e',
+                  borderColor: '#ccb94e',
+                  color: 'white'
+                }
               }}
             >
               <RestoreFromTrashOutlinedIcon sx={icon} />
@@ -217,32 +250,32 @@ const Home: NextPage = () => {
             <Box
               mr={2}
               sx={{
-                background: "#FED7E2",
-                border: "8px solid #FED7E2",
-                borderRadius: "30px",
-                height: "50px",
-                width: "50px",
-                "&:hover": {
-                  background: "#d4b2bb",
-                  borderColor: "#d4b2bb",
-                  color: "white",
-                },
+                background: '#FED7E2',
+                border: '8px solid #FED7E2',
+                borderRadius: '30px',
+                height: '50px',
+                width: '50px',
+                '&:hover': {
+                  background: '#d4b2bb',
+                  borderColor: '#d4b2bb',
+                  color: 'white'
+                }
               }}
             >
               <SaveAsIcon sx={icon} />
             </Box>
             <Box
               sx={{
-                background: "#68D391",
-                border: "8px solid #68D391",
-                borderRadius: "30px",
-                height: "50px",
-                width: "50px",
-                "&:hover": {
-                  background: "#55ab76",
-                  borderColor: "#55ab76",
-                  color: "white",
-                },
+                background: '#68D391',
+                border: '8px solid #68D391',
+                borderRadius: '30px',
+                height: '50px',
+                width: '50px',
+                '&:hover': {
+                  background: '#55ab76',
+                  borderColor: '#55ab76',
+                  color: 'white'
+                }
               }}
             >
               <OpenInNewIcon sx={icon} />
@@ -252,16 +285,14 @@ const Home: NextPage = () => {
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
-              <TableRow sx={{ background: "#68D391" }}>
-                <TableCell sx={{ fontSize: "24px", fontWeight: "bold" }}>
-                  Task
-                </TableCell>
+              <TableRow sx={{ background: '#68D391' }}>
+                <TableCell sx={{ fontSize: '24px', fontWeight: 'bold' }}>Task</TableCell>
                 <TableCell
                   align="right"
                   sx={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    textAlign: "center",
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textAlign: 'center'
                   }}
                 >
                   Status
@@ -269,9 +300,9 @@ const Home: NextPage = () => {
                 <TableCell
                   align="right"
                   sx={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    textAlign: "center",
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textAlign: 'center'
                   }}
                 >
                   Priority
@@ -279,9 +310,9 @@ const Home: NextPage = () => {
                 <TableCell
                   align="right"
                   sx={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    textAlign: "center",
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textAlign: 'center'
                   }}
                 >
                   Create
@@ -289,9 +320,9 @@ const Home: NextPage = () => {
                 <TableCell
                   align="right"
                   sx={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    textAlign: "center",
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textAlign: 'center'
                   }}
                 >
                   Update
@@ -299,9 +330,9 @@ const Home: NextPage = () => {
                 <TableCell
                   align="right"
                   sx={{
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                    textAlign: "center",
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textAlign: 'center'
                   }}
                 >
                   Action
@@ -309,84 +340,75 @@ const Home: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.create}
-                  sx={{
-                    "&:last-child td, &:last-child th": {
-                      border: 0,
-                    },
-                  }}
-                >
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontSize: "18px", fontWeight: "bold" }}
+              {
+                filteredRows.map((row) => (
+                  <TableRow
+                    key={row.create}
+                    sx={{
+                      '&:last-child td, &:last-child th': {
+                        border: 0
+                      }
+                    }}
                   >
-                    {row.task}
-                  </TableCell>
-                  <TableCell align="right">{todoStatus(row.status)}</TableCell>
-                  <TableCell align="right">
-                    <FormControl fullWidth>
-                      <Select
-                        value={row.priority}
+                    <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                      {row.task}
+                    </TableCell>
+                    <TableCell align="right">{todoStatus(row.status)}</TableCell>
+                    <TableCell align="right">
+                      <FormControl fullWidth>
+                        <Select
+                          value={row.priority}
+                          sx={{
+                            border: '2px solid #EC7272',
+                            borderRadius: '15px',
+                            textAlign: 'left',
+                            height: '50px'
+                          }}
+                        >
+                          <MenuItem value="Low">Low</MenuItem>
+                          <MenuItem value="Middle">Middle</MenuItem>
+                          <MenuItem value="High">High</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                      {row.create}
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                      {row.update}
+                    </TableCell>
+                    <TableCell align="right">
+                      <EditOutlinedIcon
                         sx={{
-                          border: "2px solid #EC7272",
-                          borderRadius: "15px",
-                          textAlign: "left",
-                          height: "50px",
+                          borderRadius: '8px',
+                          marginRight: '10px',
+                          '&:hover': {
+                            background: 'gray',
+                            color: 'white'
+                          }
                         }}
-                      >
-                        <MenuItem value="Low">Low</MenuItem>
-                        <MenuItem value="Middle">Middle</MenuItem>
-                        <MenuItem value="High">High</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                    {row.create}
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                    {row.update}
-                  </TableCell>
-                  <TableCell align="right">
-                    <EditOutlinedIcon
-                      sx={{
-                        borderRadius: "8px",
-                        marginRight: "10px",
-                        "&:hover": {
-                          background: "gray",
-                          color: "white",
-                        },
-                      }}
-                    />
-                    <DeleteOutlineOutlinedIcon
-                      sx={{
-                        borderRadius: "8px",
-                        "&:hover": {
-                          background: "gray",
-                          color: "white",
-                        },
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+                      />
+                      <DeleteOutlineOutlinedIcon
+                        sx={{
+                          borderRadius: '8px',
+                          '&:hover': {
+                            background: 'gray',
+                            color: 'white'
+                          }
+                        }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <Box mt={6} mb={3} sx={{ textAlign: "center" }}>
-          <Pagination
-            count={10}
-            size="large"
-            variant="outlined"
-            shape="rounded"
-            sx={{ display: "inline-block" }}
-          />
+        <Box mt={6} mb={3} sx={{ textAlign: 'center' }}>
+          <Pagination count={10} size="large" variant="outlined" shape="rounded" sx={{ display: 'inline-block' }} />
         </Box>
       </Container>
     </>
-  );
+  )
 };
 
 const ResetBtn = styled("button")({
