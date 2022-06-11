@@ -154,9 +154,9 @@ export default function CreateTodo() {
             <FormControl>
               <FormLabel id="priority">PRIORITY</FormLabel>
               <RadioGroup row aria-labelledby="priority" defaultValue="priority" name="priority">
-                <FormControlLabel value="high" control={<Radio />} label="High" />
-                <FormControlLabel value="middle" control={<Radio />} label="Middle" />
-                <FormControlLabel value="low" control={<Radio />} label="Low" />
+                <FormControlLabel value="High" control={<Radio />} label="High" />
+                <FormControlLabel value="Middle" control={<Radio />} label="Middle" />
+                <FormControlLabel value="Low" control={<Radio />} label="Low" />
               </RadioGroup>
             </FormControl>
             <Box

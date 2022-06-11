@@ -65,15 +65,19 @@ const Home: NextPage = () => {
     return () => unSub()
   }, [])
 
-  const [status, setStatus] = useState('NONE')
-  const [priority, setPriority] = useState('None')
+  const [filteringStatus, setFilteringStatus] = useState('NONE')
+  const [filteringPriority, setFilteringPriority] = useState('None')
 
-  const statusChange = (event: SelectChangeEvent) => {
-    setStatus(event.target.value as string)
+  const filteringStatusChange = (event: SelectChangeEvent) => {
+    setFilteringStatus(event.target.value as string)
   }
-  const priorityChange = (event: SelectChangeEvent) => {
-    setPriority(event.target.value as string)
+  const filteringPriorityChange = (event: SelectChangeEvent) => {
+    setFilteringPriority(event.target.value as string)
   }
+  const resetClick = () => {
+    setFilteringStatus("NONE")
+    setFilteringPriority("None")
+  };
 
   const todoStatus = (status: string) => {
     switch (status) {
@@ -138,7 +142,7 @@ const Home: NextPage = () => {
                 height: '50px'
               }}
             >
-              <Select value={status} onChange={statusChange}>
+              <Select value={filteringStatus} onChange={filteringStatusChange}>
                 <MenuItem value="NONE">- - - - - - -</MenuItem>
                 <MenuItem value="NOT STARTED">NOT STARTED</MenuItem>
                 <MenuItem value="DOING">DOING</MenuItem>
@@ -158,7 +162,7 @@ const Home: NextPage = () => {
                 height: '50px'
               }}
             >
-              <Select value={priority} onChange={priorityChange}>
+              <Select value={filteringPriority} onChange={filteringPriorityChange}>
                 <MenuItem value="None">- - - - - - -</MenuItem>
                 <MenuItem value="Low">Low</MenuItem>
                 <MenuItem value="Middle">Middle</MenuItem>
@@ -175,7 +179,7 @@ const Home: NextPage = () => {
               marginBottom: '8px'
             }}
           >
-            <ResetBtn sx={{}}>RESET</ResetBtn>
+            <ResetBtn onClick={resetClick}>RESET</ResetBtn>
           </Box>
           <Box sx={{ display: 'flex' }}>
             <Box
@@ -291,7 +295,11 @@ const Home: NextPage = () => {
             </TableHead>
             <TableBody>
               {todos.map((todo) => {
-                if (todo.isDraft === false) {
+                if (
+                  todo.isDraft === false &&
+                  (filteringStatus === todo.status || filteringStatus === "NONE") &&
+                  (filteringPriority === todo.priority || filteringPriority === "None" )
+                ) {
                   return (
                     <TableRow
                       key={todo.id}
@@ -318,9 +326,9 @@ const Home: NextPage = () => {
                               height: '50px'
                             }}
                           >
-                            <MenuItem value="low">Low</MenuItem>
-                            <MenuItem value="middle">Middle</MenuItem>
-                            <MenuItem value="high">High</MenuItem>
+                            <MenuItem value="Low">Low</MenuItem>
+                            <MenuItem value="Middle">Middle</MenuItem>
+                            <MenuItem value="High">High</MenuItem>
                           </Select>
                         </FormControl>
                       </TableCell>
