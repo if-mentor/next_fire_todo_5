@@ -307,7 +307,6 @@ const Home: NextPage = () => {
             <TableBody>
               {todos.map((todo) => {
                 if (
-                  todo.isDraft === false &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
                 ) {
