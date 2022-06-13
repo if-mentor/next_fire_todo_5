@@ -48,8 +48,6 @@ import { parseTimestampToDate } from '../utils/DataFormat'
   ])
 
   const q = query(collection(db, 'todos'), orderBy('create'))
-  // const [status, setStatus] = useState("NONE");
-  // const [priority, setPriority] = useState("None");
   const [keyword, setKeyword] = useState('')
   const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
@@ -98,15 +96,10 @@ import { parseTimestampToDate } from '../utils/DataFormat'
 
   const keywordChange = (event: SelectChangeEvent) => {
     setKeyword(event.target.value as string)
-    console.log(keyword)
-   
-
   }
 
   useEffect(() => {
     if (keyword === '') {
-console.log(todos)
-
       setFilteredRows(todos)
       return
     }
