@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { useRouter } from 'next/router'
 import {
   Avatar,
   Box,
@@ -13,10 +15,15 @@ import {
   IconButton
 } from '@mui/material'
 import { VisibilityOff, Visibility } from '@mui/icons-material'
-import { useState } from 'react'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+
+import useSnackbar from '../hooks/useSnackbar'
+import { auth } from '../firebaseConfig'
 
 export default function SignUp() {
   const [isVisible, setIsVisible] = useState(false)
+  const { setMessage, AlertSnackbar } = useSnackbar()
+  const router = useRouter()
 
   const togglePassword = () => {
     setIsVisible((prevState) => !prevState)
@@ -25,18 +32,111 @@ export default function SignUp() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
-    const password = data.get('password')
-    const checkPassword = data.get('checkPassword')
+    const userName = data.get('userName') !== null ? data.get('userName')!.toString() : ''
+    const email = data.get('email') !== null ? data.get('email')!.toString() : ''
+    const password = data.get('password') !== null ? data.get('password')!.toString() : ''
+    const checkPassword = data.get('checkPassword') !== null ? data.get('checkPassword')!.toString() : ''
 
-    if (password === checkPassword) {
-      console.log({
-        userName: data.get('userName'),
-        email: data.get('email'),
-        password: data.get('password')
-      })
-    } else {
-      alert('パスワードが間違っています')
+    if (userName === '') {
+      setMessage('ユーザーネームが入力されていません')
+      return
     }
+
+    if (userName.length >= 15) {
+      setMessage('ユーザーネームは15文字以上入力できません')
+      return
+    }
+
+    if (email === '') {
+      setMessage('メールアドレスが入力されていません')
+      return
+    }
+
+    // メールアドレスの正規表現
+    const pattern = /^[a-zA-Z0-9_+-]+(\.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$/
+
+    if (!pattern.test(email)) {
+      setMessage('メールアドレスに不正な値が入力されています')
+      return
+    }
+
+    if (password === '') {
+      setMessage('パスワードが入力されていません')
+      return
+    }
+
+    if (password.length < 6) {
+      setMessage('パスワードが6文字以上入力されていません')
+      return
+    }
+
+    if (password !== checkPassword) {
+      setMessage('パスワードが一致していません')
+      return
+    }
+
+    // Firebase Authを使い、メールアドレスとパスワードを登録
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user
+
+        // ここにサインアップしたユーザーのログイン処理を後々入れる
+        // ログイン機能で使うであろうemailとpasswordとuid
+        console.log({
+          email: user.email,
+          password: password,
+          uid: user.uid
+        })
+
+        router.push('/')
+      })
+      .catch((error) => {
+        const errorCode = error.code
+
+        switch (errorCode) {
+          case 'auth/cancelled-popup-request':
+          case 'auth/popup-closed-by-user':
+            return
+          case 'auth/email-already-in-use':
+            setMessage('このメールアドレスは使用されています')
+            return
+          case 'auth/invalid-email':
+            setMessage('メールアドレスの形式が正しくありません')
+            return
+          case 'auth/user-disabled':
+            setMessage('サービスの利用が停止されています')
+            return
+          case 'auth/user-not-found':
+            setMessage('メールアドレスまたはパスワードが違います')
+            return
+          case 'auth/user-mismatch':
+            setMessage('認証されているユーザーと異なるアカウントが選択されました')
+            return
+          case 'auth/weak-password':
+            setMessage('パスワードは6文字以上にしてください')
+            return
+          case 'auth/wrong-password':
+            setMessage('メールアドレスまたはパスワードが違います')
+            return
+          case 'auth/popup-blocked':
+            setMessage(
+              '認証ポップアップがブロックされました。ポップアップブロックをご利用の場合は設定を解除してください'
+            )
+            return
+          case 'auth/operation-not-supported-in-this-environment':
+          case 'auth/auth-domain-config-required':
+          case 'auth/operation-not-allowed':
+          case 'auth/unauthorized-domain':
+            setMessage('現在この認証方法はご利用頂けません')
+            return
+          case 'auth/requires-recent-login':
+            setMessage('認証の有効期限が切れています')
+            return
+          default:
+            setMessage('認証に失敗しました。しばらく時間をおいて再度お試しください')
+            return
+        }
+      })
   }
 
   return (
@@ -125,6 +225,7 @@ export default function SignUp() {
             </Button>
           </Box>
         </Box>
+        <AlertSnackbar />
       </Container>
     </>
   )

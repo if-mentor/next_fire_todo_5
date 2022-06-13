@@ -32,9 +32,7 @@ import { db } from '../firebaseConfig'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
 
-
-  
-  const Home: NextPage = () => {
+const Home: NextPage = () => {
   const [todos, setTodos] = useState([
     {
       id: '',
@@ -80,7 +78,7 @@ import { parseTimestampToDate } from '../utils/DataFormat'
   const resetClick = () => {
     setFilteringStatus('NONE')
     setFilteringPriority('None')
-    setKeyword("")
+    setKeyword('')
   }
 
   const todoStatus = (status: string) => {
@@ -155,9 +153,9 @@ import { parseTimestampToDate } from '../utils/DataFormat'
                 placeholder="Text"
                 inputProps={{ 'aria-label': 'search todo text' }}
               />
-            <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
-              <SearchIcon />
-            </IconButton>
+              <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+                <SearchIcon />
+              </IconButton>
             </Paper>
           </Box>
           <Box mr={3} sx={{ width: '190px' }}>
