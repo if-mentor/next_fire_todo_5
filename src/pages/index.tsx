@@ -32,7 +32,9 @@ import { db } from '../firebaseConfig'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
 
-const Home: NextPage = () => {
+
+  
+  const Home: NextPage = () => {
   const [todos, setTodos] = useState([
     {
       id: '',
@@ -46,7 +48,8 @@ const Home: NextPage = () => {
   ])
 
   const q = query(collection(db, 'todos'), orderBy('create'))
-
+  const [keyword, setKeyword] = useState('')
+  const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
     const unSub = onSnapshot(q, (querySnapshot) => {
       setTodos(
@@ -77,6 +80,7 @@ const Home: NextPage = () => {
   const resetClick = () => {
     setFilteringStatus('NONE')
     setFilteringPriority('None')
+    setKeyword("")
   }
 
   const todoStatus = (status: string) => {
@@ -90,6 +94,31 @@ const Home: NextPage = () => {
     }
   }
 
+  const keywordChange = (event: SelectChangeEvent) => {
+    setKeyword(event.target.value as string)
+  }
+
+  useEffect(() => {
+    if (keyword === '') {
+      setFilteredRows(todos)
+      return
+    }
+
+    const searchKeywords = keyword
+      .trim()
+      .toLowerCase()
+      .match(/[^\s]+/g)
+
+    if (searchKeywords === null) {
+      setFilteredRows(todos)
+      return
+    }
+
+    const result = todos.filter((todos) =>
+      searchKeywords.every((keyword) => todos.title.toLowerCase().indexOf(keyword) !== -1)
+    )
+    setFilteredRows(result)
+  }, [keyword, todos])
   return (
     <>
       <Container
@@ -121,13 +150,14 @@ const Home: NextPage = () => {
               }}
             >
               <InputBase
+                onChange={keywordChange}
                 sx={{ ml: 1, flex: 1, fontWeight: 'bold' }}
                 placeholder="Text"
                 inputProps={{ 'aria-label': 'search todo text' }}
               />
-              <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
-                <SearchIcon />
-              </IconButton>
+            <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+              <SearchIcon />
+            </IconButton>
             </Paper>
           </Box>
           <Box mr={3} sx={{ width: '190px' }}>
@@ -294,7 +324,7 @@ const Home: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {todos.map((todo) => {
+              {filteredRows.map((todo: any) => {
                 if (
                   todo.isDraft === false &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
