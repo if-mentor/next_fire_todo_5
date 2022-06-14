@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import type { NextPage } from 'next'
+import Link from 'next/link'
+
 import {
   Box,
   Container,
@@ -27,14 +29,11 @@ import SearchIcon from '@mui/icons-material/Search'
 import RestoreFromTrashOutlinedIcon from '@mui/icons-material/RestoreFromTrashOutlined'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import Link from 'next/link'
 import { db } from '../firebaseConfig'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy, query, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
 
-
-  
-  const Home: NextPage = () => {
+const Home: NextPage = () => {
   const [todos, setTodos] = useState([
     {
       id: '',
@@ -47,7 +46,7 @@ import { parseTimestampToDate } from '../utils/DataFormat'
     }
   ])
 
-  const q = query(collection(db, 'todos'), orderBy('create'))
+  const q = query(collection(db, 'todos'), where('isDraft', '==', false), orderBy('create'))
   const [keyword, setKeyword] = useState('')
   const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
@@ -80,7 +79,15 @@ import { parseTimestampToDate } from '../utils/DataFormat'
   const resetClick = () => {
     setFilteringStatus('NONE')
     setFilteringPriority('None')
-    setKeyword("")
+    setKeyword('')
+  }
+
+  const trashTodo = (id: string) => {
+    ;(async () => {
+      await updateDoc(doc(db, 'todos', id), {
+        isDraft: true
+      })
+    })()
   }
 
   const todoStatus = (status: string) => {
@@ -94,7 +101,7 @@ import { parseTimestampToDate } from '../utils/DataFormat'
     }
   }
 
-  const keywordChange = (event: SelectChangeEvent) => {
+  const keywordChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setKeyword(event.target.value as string)
   }
 
@@ -119,6 +126,7 @@ import { parseTimestampToDate } from '../utils/DataFormat'
     )
     setFilteredRows(result)
   }, [keyword, todos])
+
   return (
     <>
       <Container
@@ -150,14 +158,14 @@ import { parseTimestampToDate } from '../utils/DataFormat'
               }}
             >
               <InputBase
-                onChange={keywordChange}
+                onChange={(e) => keywordChange(e)}
                 sx={{ ml: 1, flex: 1, fontWeight: 'bold' }}
                 placeholder="Text"
                 inputProps={{ 'aria-label': 'search todo text' }}
               />
-            <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
-              <SearchIcon />
-            </IconButton>
+              <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+                <SearchIcon />
+              </IconButton>
             </Paper>
           </Box>
           <Box mr={3} sx={{ width: '190px' }}>
@@ -227,7 +235,9 @@ import { parseTimestampToDate } from '../utils/DataFormat'
                 }
               }}
             >
-              <RestoreFromTrashOutlinedIcon sx={icon} />
+              <Link href="/delete">
+                <RestoreFromTrashOutlinedIcon sx={icon} />
+              </Link>
             </Box>
             <Box
               mr={2}
@@ -326,7 +336,6 @@ import { parseTimestampToDate } from '../utils/DataFormat'
             <TableBody>
               {filteredRows.map((todo: any) => {
                 if (
-                  todo.isDraft === false &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
                 ) {
@@ -348,7 +357,7 @@ import { parseTimestampToDate } from '../utils/DataFormat'
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
-                            value={todo.priority}
+                            value={todo.priority ?? ""}
                             sx={{
                               border: '2px solid #EC7272',
                               borderRadius: '15px',
@@ -368,28 +377,29 @@ import { parseTimestampToDate } from '../utils/DataFormat'
                       <TableCell align="right" sx={{ fontWeight: 'bold' }}>
                         {todo.update}
                       </TableCell>
-                      <TableCell align="right">
-                        <Link href={`editTodo?id=${todo.id}`}>
-                          <EditOutlinedIcon
-                            sx={{
-                              borderRadius: '8px',
-                              marginRight: '10px',
-                              '&:hover': {
-                                background: 'gray',
-                                color: 'white'
-                              }
-                            }}
-                          />
-                        </Link>
-                        <DeleteOutlineOutlinedIcon
+                      <TableCell align="center">
+                        <IconButton
+                          href={`editTodo?id=${todo.id}`}
                           sx={{
-                            borderRadius: '8px',
                             '&:hover': {
                               background: 'gray',
                               color: 'white'
                             }
                           }}
-                        />
+                        >
+                          <EditOutlinedIcon />
+                        </IconButton>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: 'gray',
+                              color: 'white'
+                            }
+                          }}
+                          onClick={() => trashTodo(todo.id)}
+                        >
+                          <DeleteOutlineOutlinedIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   )

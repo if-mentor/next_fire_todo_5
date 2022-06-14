@@ -17,6 +17,7 @@ type Todo = {
   create: Timestamp
   update: Timestamp
   isDraft: boolean
+  isTrash: boolean
   author: string
   editor: string
 }
