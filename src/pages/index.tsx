@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 
@@ -47,7 +47,8 @@ const Home: NextPage = () => {
   ])
 
   const q = query(collection(db, 'todos'), where('isDraft', '==', false), orderBy('create'))
-
+  const [keyword, setKeyword] = useState('')
+  const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
     const unSub = onSnapshot(q, (querySnapshot) => {
       setTodos(
@@ -78,6 +79,7 @@ const Home: NextPage = () => {
   const resetClick = () => {
     setFilteringStatus('NONE')
     setFilteringPriority('None')
+    setKeyword('')
   }
 
   const trashTodo = (id: string) => {
@@ -98,6 +100,32 @@ const Home: NextPage = () => {
         return <DoneComponent>{status}</DoneComponent>
     }
   }
+
+  const keywordChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setKeyword(event.target.value as string)
+  }
+
+  useEffect(() => {
+    if (keyword === '') {
+      setFilteredRows(todos)
+      return
+    }
+
+    const searchKeywords = keyword
+      .trim()
+      .toLowerCase()
+      .match(/[^\s]+/g)
+
+    if (searchKeywords === null) {
+      setFilteredRows(todos)
+      return
+    }
+
+    const result = todos.filter((todos) =>
+      searchKeywords.every((keyword) => todos.title.toLowerCase().indexOf(keyword) !== -1)
+    )
+    setFilteredRows(result)
+  }, [keyword, todos])
 
   return (
     <>
@@ -130,6 +158,7 @@ const Home: NextPage = () => {
               }}
             >
               <InputBase
+                onChange={(e) => keywordChange(e)}
                 sx={{ ml: 1, flex: 1, fontWeight: 'bold' }}
                 placeholder="Text"
                 inputProps={{ 'aria-label': 'search todo text' }}
@@ -305,7 +334,7 @@ const Home: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {todos.map((todo) => {
+              {filteredRows.map((todo: any) => {
                 if (
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
@@ -328,7 +357,7 @@ const Home: NextPage = () => {
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
-                            value={todo.priority}
+                            value={todo.priority ?? ""}
                             sx={{
                               border: '2px solid #EC7272',
                               borderRadius: '15px',
