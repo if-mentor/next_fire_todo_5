@@ -1,9 +1,11 @@
 import React from 'react'
 import { useState } from 'react'
 import { auth } from '../firebaseConfig'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth'
+import { useRouter } from 'next/router'
 
 const Test = () => {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   console.log(email, password)
@@ -28,6 +30,14 @@ const Test = () => {
   const handleChangePassword = (event: any) => {
     setPassword(event.currentTarget.value)
   }
+  const handleSignOut = (event: any) => {
+    signOut(auth).then(() => {
+      router.push('/login')
+      alert('サインアウトしました')
+    }).catch((error) => {
+      alert('エラーが発生しました')
+    });
+  }
 
   return (
     <div>
@@ -51,6 +61,7 @@ const Test = () => {
           <button>登録</button>
         </div>
       </form>
+      <button onClick={handleSignOut}>signout</button>
     </div>
   )
 }
