@@ -1,19 +1,10 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  CssBaseline,
-  TextField,
-  Typography
-} from '@mui/material'
+import { Avatar, Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material'
 import { auth } from '../firebaseConfig'
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormInput, schema } from '../FormValidation'
 import { useForm, SubmitHandler } from 'react-hook-form'
-
 
 export default function Login() {
   const router = useRouter()
@@ -34,21 +25,24 @@ export default function Login() {
   //   console.log(password.value)
   // }
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormInput>({
-    resolver: yupResolver(schema),
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormInput>({
+    resolver: yupResolver(schema)
   })
 
   const onSubmit: SubmitHandler<FormInput> = (data: FormInput, event: any) => {
     event.preventDefault()
     const { email, password } = data
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        router.push('/')
-        alert('サインアップが完了しました。')
-        console.log(userCredential)
-      })
-      console.log(email)
-      console.log(password)
+    signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+      router.push('/')
+      alert('サインアップが完了しました。')
+      console.log(userCredential)
+    })
+    console.log(email)
+    console.log(password)
   }
 
   return (
@@ -67,8 +61,8 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             ログイン
           </Typography>
-          <Box 
-            // component="form"  
+          <Box
+            // component="form"
             sx={{ mt: 1 }}
           >
             <TextField

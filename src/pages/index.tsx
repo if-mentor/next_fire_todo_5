@@ -357,7 +357,7 @@ const Home: NextPage = () => {
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
-                            value={todo.priority ?? ""}
+                            value={todo.priority ?? ''}
                             sx={{
                               border: '2px solid #EC7272',
                               borderRadius: '15px',
