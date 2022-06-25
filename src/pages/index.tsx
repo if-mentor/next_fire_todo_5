@@ -49,7 +49,7 @@ const Home: NextPage = () => {
 
   const [sort, setSort] = useState('')
   // ソートはデフォルトが昇順になっている
-  const q = query(collection(db, 'todos'), where('isDraft', '==', false), orderBy('create'))
+  const q = query(collection(db, 'todos'), where('isDraft', '==', false), where('isTrash', '==', false), orderBy('create'))
   const [keyword, setKeyword] = useState('')
 
   const [filteredRows, setFilteredRows] = useState(todos)
@@ -63,7 +63,8 @@ const Home: NextPage = () => {
           priority: todo.data().priority,
           create: parseTimestampToDate(todo.data().create, '-'),
           update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : '更新中',
-          isDraft: todo.data().isDraft
+          isDraft: todo.data().isDraft,
+          isTrash: todo.data().isTrash
         }))
       )
     })
@@ -88,7 +89,7 @@ const Home: NextPage = () => {
   const trashTodo = (id: string) => {
     ;(async () => {
       await updateDoc(doc(db, 'todos', id), {
-        isDraft: true
+        isTrash: true
       })
     })()
   }
