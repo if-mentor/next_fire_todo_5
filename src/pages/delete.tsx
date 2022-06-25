@@ -37,7 +37,7 @@ type Todo = {
 // firestore root directory
 const rootDir = 'todos'
 
-const detail: NextPage = () => {
+const Delete: NextPage = () => {
   const [todos, setTodos] = useState<Array<Todo> | null>(null)
   const router = useRouter()
 
@@ -197,7 +197,7 @@ const detail: NextPage = () => {
                           </TableCell>
                           <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
                             <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                              {parseTimestampToDate(todo.create, '-', true)}
+                              {parseTimestampToDate(todo.create, '-')}
                             </Typography>
                           </TableCell>
                           <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
@@ -254,4 +254,4 @@ const detail: NextPage = () => {
   )
 }
 
-export default detail
+export default Delete

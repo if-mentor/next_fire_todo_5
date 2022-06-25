@@ -137,15 +137,11 @@ const EditTodo = () => {
                 <Box display="flex">
                   <Box mr={2}>
                     <Typography>Create</Typography>
-                    <p style={{ margin: '0 0 0 10px', fontWeight: 600 }}>
-                      {parseTimestampToDate(todo.create, '-', true)}
-                    </p>
+                    <p style={{ margin: '0 0 0 10px', fontWeight: 600 }}>{parseTimestampToDate(todo.create, '-')}</p>
                   </Box>
                   <Box>
                     <Typography>Update</Typography>
-                    <p style={{ margin: '0 0 0 10px', fontWeight: 600 }}>
-                      {parseTimestampToDate(todo.update, '-', true)}
-                    </p>
+                    <p style={{ margin: '0 0 0 10px', fontWeight: 600 }}>{parseTimestampToDate(todo.update, '-')}</p>
                   </Box>
                 </Box>
                 <SButton
