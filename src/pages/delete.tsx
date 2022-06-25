@@ -16,9 +16,11 @@ import {
   Pagination
 } from '@mui/material'
 import Container from '@mui/material/Container'
-import { collection, deleteDoc, doc, onSnapshot, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore'
+import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
 import { parseTimestampToDate } from '../utils/DataFormat'
+import useFirebase from '../hooks/useFirebase'
+import useDialog, { ConfirmDialogType } from '../hooks/useDialog'
 
 type Todo = {
   id: string
@@ -34,12 +36,12 @@ type Todo = {
   editor: string
 }
 
-// firestore root directory
-const rootDir = 'todos'
-
-const detail: NextPage = () => {
+const Delete: NextPage = () => {
+  const [dialog, setDialog] = useState<keyof ConfirmDialogType | null>(null)
   const [todos, setTodos] = useState<Array<Todo> | null>(null)
   const router = useRouter()
+  const { deleteData, restoreData } = useFirebase()
+  const { ConfirmDialog } = useDialog()
 
   useEffect(() => {
     const q = query(collection(db, 'todos'), where('isDraft', '==', true), orderBy('create'))
@@ -65,19 +67,46 @@ const detail: NextPage = () => {
     return () => unsub()
   }, [])
 
+  // 単一削除
   const deleteTodo = (id: string) => {
-    const docRef = doc(db, rootDir, id)
-    ;(async () => {
-      await deleteDoc(docRef)
-    })()
+    deleteData(Array.of(id))
   }
 
+  // 単一リストア
   const restoreTodo = (id: string) => {
-    ;(async () => {
-      await updateDoc(doc(db, 'todos', id), {
-        isDraft: false
-      })
-    })()
+    restoreData(Array.of(id))
+  }
+
+  // 複数削除
+  const deleteAllTodo = () => {
+    if (todos === null) return
+
+    const deleteTodoId = todos.map((todo) => todo.id)
+    deleteData(deleteTodoId)
+      .then(() => setDialog(null))
+      .catch((error) => alert(error))
+  }
+
+  // 複数リストア
+  const restoreAllTodo = () => {
+    if (todos === null) return
+
+    const restoreTodoId = todos.map((todo) => todo.id)
+    restoreData(restoreTodoId)
+      .then(() => setDialog(null))
+      .catch((error) => alert(error))
+  }
+
+  // 確認ダイアログOKボタン押下時
+  const onClickConfirmDialogOKBtn = () => {
+    switch (dialog) {
+      case 'delete':
+        deleteAllTodo()
+        return
+      case 'restore':
+        restoreAllTodo()
+        return
+    }
   }
 
   return (
@@ -104,6 +133,7 @@ const detail: NextPage = () => {
                 fontWeight: 'bold',
                 fontSize: 18
               }}
+              onClick={() => setDialog('delete')}
             >
               Delete All
             </Button>
@@ -122,6 +152,7 @@ const detail: NextPage = () => {
                 fontWeight: 'bold',
                 fontSize: 18
               }}
+              onClick={() => setDialog('restore')}
             >
               Restore ALL
             </Button>
@@ -250,8 +281,9 @@ const detail: NextPage = () => {
           </Box>
         </Box>
       </Container>
+      <ConfirmDialog dialog={dialog} setOpen={setDialog} onClickOK={() => onClickConfirmDialogOKBtn()} />
     </>
   )
 }
 
-export default detail
+export default Delete
