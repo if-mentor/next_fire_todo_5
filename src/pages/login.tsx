@@ -8,22 +8,6 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 
 export default function Login() {
   const router = useRouter()
-  // const handleSubmit = (event: any) => {
-  //   event.preventDefault()
-  //   const { email, password } = event.target.elements
-  //   signInWithEmailAndPassword(auth, email.value, password.value)
-  //     .then((userCredential) => {
-  //       router.push('/test')
-  //       alert('サインアップが完了しました。')
-  //       console.log(userCredential)
-  //     })
-  //     .catch((error) => {
-  //       console.log('こちらのメールアドレスは登録できませんでした。')
-  //       console.error(error)
-  //     })
-  //   console.log(email.value)
-  //   console.log(password.value)
-  // }
 
   const {
     register,
