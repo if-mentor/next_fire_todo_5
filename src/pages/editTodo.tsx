@@ -7,20 +7,7 @@ import { doc, getDoc, Timestamp, updateDoc, serverTimestamp } from 'firebase/fir
 import { db } from '../firebaseConfig'
 import { parseTimestampToDate } from '../utils/DataFormat'
 import useSnackbar from '../hooks/useSnackbar'
-
-type Todo = {
-  id: string
-  title: string
-  detail: string
-  status: 'NOT STARTED' | 'DOING' | 'DONE'
-  priority: 'Low' | 'Middle' | 'High'
-  create: Timestamp
-  update: Timestamp
-  isDraft: boolean
-  isTrash: boolean
-  author: string
-  editor: string
-}
+import { Todo } from '../types/todo'
 
 // firestore root directory
 const rootDir = 'todos'
