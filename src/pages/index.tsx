@@ -9,6 +9,7 @@ import {
   FormControl,
   IconButton,
   InputBase,
+  InputLabel,
   MenuItem,
   Pagination,
   Paper,
@@ -46,8 +47,11 @@ const Home: NextPage = () => {
     }
   ])
 
+  const [sort, setSort] = useState('')
+  // ソートはデフォルトが昇順になっている
   const q = query(collection(db, 'todos'), where('isDraft', '==', false), where('isTrash', '==', false), orderBy('create'))
   const [keyword, setKeyword] = useState('')
+
   const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
     const unSub = onSnapshot(q, (querySnapshot) => {
@@ -58,7 +62,7 @@ const Home: NextPage = () => {
           status: todo.data().status,
           priority: todo.data().priority,
           create: parseTimestampToDate(todo.data().create, '-'),
-          update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : "更新中",
+          update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : '更新中',
           isDraft: todo.data().isDraft,
           isTrash: todo.data().isTrash
         }))
@@ -117,20 +121,29 @@ const Home: NextPage = () => {
   }, [keyword, todos])
 
   const changeStatus = (e: SelectChangeEvent, id: string) => {
-    const status = e.target.value;
-    updateDoc(doc(db, "todos", id), {
+    const status = e.target.value
+    updateDoc(doc(db, 'todos', id), {
       status: status,
-      update: serverTimestamp(),
-    });
-  };
+      update: serverTimestamp()
+    })
+  }
 
   const changePriority = (e: SelectChangeEvent, id: string) => {
-    const priority = e.target.value;
-    updateDoc(doc(db, "todos", id), {
+    const priority = e.target.value
+    updateDoc(doc(db, 'todos', id), {
       priority: priority,
-      update: serverTimestamp(),
-    });
-  };
+      update: serverTimestamp()
+    })
+  }
+  const changeSort = (e: SelectChangeEvent) => {
+    setSort(e.target.value)
+
+    if (e.target.value === 'asc') {
+      setFilteredRows(filteredRows.sort((a, b) => new Date(a.create).getTime() - new Date(b.create).getTime()))
+    } else {
+      setFilteredRows(filteredRows.sort((a, b) => new Date(b.create).getTime() - new Date(a.create).getTime()))
+    }
+  }
 
   return (
     <>
@@ -285,7 +298,24 @@ const Home: NextPage = () => {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow sx={{ background: '#68D391' }}>
-                <TableCell sx={{ fontSize: '24px', fontWeight: 'bold' }}>Task</TableCell>
+                <TableCell sx={{ fontSize: '24px', fontWeight: 'bold' }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label" sx={{ fontSize: '24px', fontWeight: 'bold' }}>
+                      Task
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={sort}
+                      label="Age"
+                      onChange={(e: SelectChangeEvent) => changeSort(e)}
+                      sx={{ fontSize: '20px', fontWeight: 'bold' }}
+                    >
+                      <MenuItem value="asc">昇順</MenuItem>
+                      <MenuItem value="desc">降順</MenuItem>
+                    </Select>
+                  </FormControl>
+                </TableCell>
                 <TableCell
                   align="right"
                   sx={{
@@ -361,7 +391,7 @@ const Home: NextPage = () => {
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
-                            value={todo.status ?? ""}
+                            value={todo.status ?? ''}
                             onChange={(e: SelectChangeEvent) => changeStatus(e, todo.id)}
                             sx={{
                               border: '2px solid #EC7272',
@@ -379,7 +409,7 @@ const Home: NextPage = () => {
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
-                            value={todo.priority ?? ""}
+                            value={todo.priority ?? ''}
                             onChange={(e: SelectChangeEvent) => changePriority(e, todo.id)}
                             sx={{
                               border: '2px solid #EC7272',
