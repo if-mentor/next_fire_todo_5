@@ -21,20 +21,7 @@ import { db } from '../firebaseConfig'
 import { parseTimestampToDate } from '../utils/DataFormat'
 import useFirebase from '../hooks/useFirebase'
 import useDialog, { ConfirmDialogType } from '../hooks/useDialog'
-
-type Todo = {
-  id: string
-  title: string
-  detail: string
-  status: 'NOT STARTED' | 'DOING' | 'DONE'
-  priority: 'Low' | 'Middle' | 'High'
-  create: Timestamp
-  update: Timestamp
-  isDraft: boolean
-  isTrash: boolean
-  author: string
-  editor: string
-}
+import { Todo } from '../types/todo'
 
 const Delete: NextPage = () => {
   const [dialog, setDialog] = useState<keyof ConfirmDialogType | null>(null)
@@ -44,7 +31,7 @@ const Delete: NextPage = () => {
   const { ConfirmDialog } = useDialog()
 
   useEffect(() => {
-    const q = query(collection(db, 'todos'), where('isDraft', '==', true), orderBy('create'))
+    const q = query(collection(db, 'todos'), where('isTrash', '==', true), orderBy('create'))
 
     const unsub = onSnapshot(q, (querySnapshot) => {
       const todos = querySnapshot.docs.map((todo) => ({

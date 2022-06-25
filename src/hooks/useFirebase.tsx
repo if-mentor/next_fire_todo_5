@@ -15,7 +15,7 @@ const useFirebase = () => {
   const restoreData = async (restoreTodoId: Array<string>): Promise<void> => {
     ;(restoreTodoId as Array<string>).forEach(async (id) => {
       await updateDoc(doc(db, DOCPATH, id), {
-        isDraft: false
+        isTrash: false
       })
     })
   }

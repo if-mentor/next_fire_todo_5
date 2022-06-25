@@ -46,7 +46,7 @@ const Home: NextPage = () => {
     }
   ])
 
-  const q = query(collection(db, 'todos'), where('isDraft', '==', false), orderBy('create'))
+  const q = query(collection(db, 'todos'), where('isDraft', '==', false), where('isTrash', '==', false), orderBy('create'))
   const [keyword, setKeyword] = useState('')
   const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
@@ -59,7 +59,8 @@ const Home: NextPage = () => {
           priority: todo.data().priority,
           create: parseTimestampToDate(todo.data().create, '-'),
           update: parseTimestampToDate(todo.data().update, '-'),
-          isDraft: todo.data().isDraft
+          isDraft: todo.data().isDraft,
+          isTrash: todo.data().isTrash
         }))
       )
     })
@@ -85,7 +86,7 @@ const Home: NextPage = () => {
   const trashTodo = (id: string) => {
     ;(async () => {
       await updateDoc(doc(db, 'todos', id), {
-        isDraft: true
+        isTrash: true
       })
     })()
   }
