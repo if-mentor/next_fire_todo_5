@@ -30,7 +30,7 @@ import RestoreFromTrashOutlinedIcon from '@mui/icons-material/RestoreFromTrashOu
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { db } from '../firebaseConfig'
-import { collection, doc, onSnapshot, orderBy, query, updateDoc, where } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
 
 const Home: NextPage = () => {
@@ -58,13 +58,12 @@ const Home: NextPage = () => {
           status: todo.data().status,
           priority: todo.data().priority,
           create: parseTimestampToDate(todo.data().create, '-'),
-          update: parseTimestampToDate(todo.data().update, '-'),
+          update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : "更新中",
           isDraft: todo.data().isDraft,
           isTrash: todo.data().isTrash
         }))
       )
     })
-
     return () => unSub()
   }, [])
 
@@ -89,17 +88,6 @@ const Home: NextPage = () => {
         isTrash: true
       })
     })()
-  }
-
-  const todoStatus = (status: string) => {
-    switch (status) {
-      case 'NOT STARTED':
-        return <NotStartedComponent>{status}</NotStartedComponent>
-      case 'DOING':
-        return <DoingComponent>{status}</DoingComponent>
-      case 'DONE':
-        return <DoneComponent>{status}</DoneComponent>
-    }
   }
 
   const keywordChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -127,6 +115,22 @@ const Home: NextPage = () => {
     )
     setFilteredRows(result)
   }, [keyword, todos])
+
+  const changeStatus = (e: SelectChangeEvent, id: string) => {
+    const status = e.target.value;
+    updateDoc(doc(db, "todos", id), {
+      status: status,
+      update: serverTimestamp(),
+    });
+  };
+
+  const changePriority = (e: SelectChangeEvent, id: string) => {
+    const priority = e.target.value;
+    updateDoc(doc(db, "todos", id), {
+      priority: priority,
+      update: serverTimestamp(),
+    });
+  };
 
   return (
     <>
@@ -354,11 +358,29 @@ const Home: NextPage = () => {
                           <a>{todo.title}</a>
                         </Link>
                       </TableCell>
-                      <TableCell align="right">{todoStatus(todo.status)}</TableCell>
+                      <TableCell align="right">
+                        <FormControl fullWidth>
+                          <Select
+                            value={todo.status ?? ""}
+                            onChange={(e: SelectChangeEvent) => changeStatus(e, todo.id)}
+                            sx={{
+                              border: '2px solid #EC7272',
+                              borderRadius: '15px',
+                              textAlign: 'left',
+                              height: '50px'
+                            }}
+                          >
+                            <MenuItem value="NOT STARTED">NOT STARTED</MenuItem>
+                            <MenuItem value="DOING">DOING</MenuItem>
+                            <MenuItem value="DONE">DONE</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </TableCell>
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
                             value={todo.priority ?? ""}
+                            onChange={(e: SelectChangeEvent) => changePriority(e, todo.id)}
                             sx={{
                               border: '2px solid #EC7272',
                               borderRadius: '15px',
@@ -431,42 +453,6 @@ const ResetBtn = styled('button')({
     background: '#858585',
     color: 'white'
   }
-})
-
-const NotStartedComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#F0FFF4',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'black',
-  fontSize: '12px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '14px 0px'
-})
-
-const DoingComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#25855A',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'white',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '10px'
-})
-
-const DoneComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#68D391',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'black',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '10px'
 })
 
 const icon = {
