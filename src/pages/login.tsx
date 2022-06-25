@@ -5,25 +5,10 @@ import { useRouter } from 'next/router'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormInput, schema } from '../FormValidation'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import  Link  from 'next/link'
 
 export default function Login() {
   const router = useRouter()
-  // const handleSubmit = (event: any) => {
-  //   event.preventDefault()
-  //   const { email, password } = event.target.elements
-  //   signInWithEmailAndPassword(auth, email.value, password.value)
-  //     .then((userCredential) => {
-  //       router.push('/test')
-  //       alert('サインアップが完了しました。')
-  //       console.log(userCredential)
-  //     })
-  //     .catch((error) => {
-  //       console.log('こちらのメールアドレスは登録できませんでした。')
-  //       console.error(error)
-  //     })
-  //   console.log(email.value)
-  //   console.log(password.value)
-  // }
 
   const {
     register,
@@ -109,6 +94,9 @@ export default function Login() {
             >
               ログイン
             </Button>
+            <Link href="/forgotPassword">
+              <a style={{color: 'blue'}}>パスワードを忘れてしまった方はこちら</a>
+            </Link>
           </Box>
         </Box>
       </Container>
