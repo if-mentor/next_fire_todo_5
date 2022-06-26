@@ -46,7 +46,12 @@ const Home: NextPage = () => {
     }
   ])
 
-  const q = query(collection(db, 'todos'), where('isDraft', '==', false), where('isTrash', '==', false), orderBy('create'))
+  const q = query(
+    collection(db, 'todos'),
+    where('isDraft', '==', false),
+    where('isTrash', '==', false),
+    orderBy('create')
+  )
   const [keyword, setKeyword] = useState('')
   const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
@@ -58,7 +63,7 @@ const Home: NextPage = () => {
           status: todo.data().status,
           priority: todo.data().priority,
           create: parseTimestampToDate(todo.data().create, '-'),
-          update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : "更新中",
+          update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : '更新中',
           isDraft: todo.data().isDraft,
           isTrash: todo.data().isTrash
         }))
@@ -117,20 +122,20 @@ const Home: NextPage = () => {
   }, [keyword, todos])
 
   const changeStatus = (e: SelectChangeEvent, id: string) => {
-    const status = e.target.value;
-    updateDoc(doc(db, "todos", id), {
+    const status = e.target.value
+    updateDoc(doc(db, 'todos', id), {
       status: status,
-      update: serverTimestamp(),
-    });
-  };
+      update: serverTimestamp()
+    })
+  }
 
   const changePriority = (e: SelectChangeEvent, id: string) => {
-    const priority = e.target.value;
-    updateDoc(doc(db, "todos", id), {
+    const priority = e.target.value
+    updateDoc(doc(db, 'todos', id), {
       priority: priority,
-      update: serverTimestamp(),
-    });
-  };
+      update: serverTimestamp()
+    })
+  }
 
   return (
     <>
@@ -354,14 +359,14 @@ const Home: NextPage = () => {
                       }}
                     >
                       <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Link href={`/todo/${todo.id}`}>
+                        <Link href={`/detail?id=${todo.id}`}>
                           <a>{todo.title}</a>
                         </Link>
                       </TableCell>
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
-                            value={todo.status ?? ""}
+                            value={todo.status ?? ''}
                             onChange={(e: SelectChangeEvent) => changeStatus(e, todo.id)}
                             sx={{
                               border: '2px solid #EC7272',
@@ -379,7 +384,7 @@ const Home: NextPage = () => {
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
-                            value={todo.priority ?? ""}
+                            value={todo.priority ?? ''}
                             onChange={(e: SelectChangeEvent) => changePriority(e, todo.id)}
                             sx={{
                               border: '2px solid #EC7272',
