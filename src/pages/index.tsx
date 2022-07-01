@@ -33,8 +33,22 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { db } from '../firebaseConfig'
 import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { useRouter } from 'next/router'
 
 const Home: NextPage = () => {
+  // ログインしていない場合はwelcomeページに飛ばす
+  const router = useRouter()
+  const auth = getAuth()
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log('uid ' + user.uid + ' がログインしています')
+    } else {
+      // welcomeページがまだないため、サインアップに飛ばす
+      router.push('/signUp')
+    }
+  })
+
   const [todos, setTodos] = useState([
     {
       id: '',
