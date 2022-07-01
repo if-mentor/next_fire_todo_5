@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+
 import {
   Box,
   Button,
@@ -13,8 +16,86 @@ import {
   Pagination
 } from '@mui/material'
 import Container from '@mui/material/Container'
+import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore'
+import { db } from '../firebaseConfig'
+import { parseTimestampToDate } from '../utils/DataFormat'
+import useFirebase from '../hooks/useFirebase'
+import useDialog, { ConfirmDialogType } from '../hooks/useDialog'
+import { Todo } from '../types/todo'
 
-const detail: NextPage = () => {
+const Delete: NextPage = () => {
+  const [dialog, setDialog] = useState<keyof ConfirmDialogType | null>(null)
+  const [todos, setTodos] = useState<Array<Todo> | null>(null)
+  const router = useRouter()
+  const { deleteData, restoreData } = useFirebase()
+  const { ConfirmDialog } = useDialog()
+
+  useEffect(() => {
+    const q = query(collection(db, 'todos'), where('isTrash', '==', true), orderBy('create'))
+
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      const todos = querySnapshot.docs.map((todo) => ({
+        id: todo.data().id,
+        title: todo.data().title,
+        detail: todo.data().detail,
+        status: todo.data().status,
+        priority: todo.data().priority,
+        create: todo.data().create,
+        update: todo.data().update,
+        isDraft: todo.data().isDraft,
+        isTrash: todo.data().isTrash,
+        author: todo.data().author,
+        editor: todo.data().editor
+      }))
+
+      setTodos(todos)
+    })
+
+    return () => unsub()
+  }, [])
+
+  // 単一削除
+  const deleteTodo = (id: string) => {
+    deleteData(Array.of(id))
+  }
+
+  // 単一リストア
+  const restoreTodo = (id: string) => {
+    restoreData(Array.of(id))
+  }
+
+  // 複数削除
+  const deleteAllTodo = () => {
+    if (todos === null) return
+
+    const deleteTodoId = todos.map((todo) => todo.id)
+    deleteData(deleteTodoId)
+      .then(() => setDialog(null))
+      .catch((error) => alert(error))
+  }
+
+  // 複数リストア
+  const restoreAllTodo = () => {
+    if (todos === null) return
+
+    const restoreTodoId = todos.map((todo) => todo.id)
+    restoreData(restoreTodoId)
+      .then(() => setDialog(null))
+      .catch((error) => alert(error))
+  }
+
+  // 確認ダイアログOKボタン押下時
+  const onClickConfirmDialogOKBtn = () => {
+    switch (dialog) {
+      case 'delete':
+        deleteAllTodo()
+        return
+      case 'restore':
+        restoreAllTodo()
+        return
+    }
+  }
+
   return (
     <>
       <Container component="main" maxWidth="xl">
@@ -39,6 +120,7 @@ const detail: NextPage = () => {
                 fontWeight: 'bold',
                 fontSize: 18
               }}
+              onClick={() => setDialog('delete')}
             >
               Delete All
             </Button>
@@ -57,6 +139,7 @@ const detail: NextPage = () => {
                 fontWeight: 'bold',
                 fontSize: 18
               }}
+              onClick={() => setDialog('restore')}
             >
               Restore ALL
             </Button>
@@ -77,6 +160,7 @@ const detail: NextPage = () => {
                 fontWeight: 'bold',
                 fontSize: 18
               }}
+              onClick={() => router.back()}
             >
               Back
             </Button>
@@ -101,378 +185,73 @@ const detail: NextPage = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        aaaa
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            background: '#f0fff4',
-                            '&:hover': { background: '#fff', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            border: 1,
-                            borderColor: 'text.primary',
-                            color: 'black',
-                            fontWeight: 'bold',
-                            fontSize: 8
-                          }}
-                        >
-                          NOT STARTED
-                        </Button>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold', color: '#9a5656' }}>
-                          High
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                          2020-11-8 18:55
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#ec7272',
-                            '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#62b1ea',
-                            '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Restore
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        aaaa
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            background: '#26855a',
-                            '&:hover': { background: '#26844a', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            border: 1,
-                            borderColor: 'text.primary',
-                            color: 'white',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          DOING
-                        </Button>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold', color: '#9a5656' }}>
-                          High
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                          2020-11-8 18:55
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#ec7272',
-                            '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#62b1ea',
-                            '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Restore
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        aaaa
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            background: '#68d391',
-                            '&:hover': { background: '#68d388', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            border: 1,
-                            borderColor: 'text.primary',
-                            color: 'black',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          DONE
-                        </Button>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold', color: '#bdeacb' }}>
-                          Middle
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                          2020-11-8 18:55
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#ec7272',
-                            '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#62b1ea',
-                            '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Restore
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        aaaa
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            background: '#26855a',
-                            '&:hover': { background: '#26844a', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            border: 1,
-                            borderColor: 'text.primary',
-                            color: 'white',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          DOING
-                        </Button>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold', color: '#a6a6a6' }}>
-                          Low
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                          2020-11-8 18:55
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#ec7272',
-                            '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#62b1ea',
-                            '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Restore
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        aaaa
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            background: '#26855a',
-                            '&:hover': { background: '#26844a', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            border: 1,
-                            borderColor: 'text.primary',
-                            color: 'white',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          DOING
-                        </Button>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold', color: '#bdeacb' }}>
-                          Middle
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                          2020-11-8 18:55
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#ec7272',
-                            '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#62b1ea',
-                            '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Restore
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        aaaa
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            background: '#26855a',
-                            '&:hover': { background: '#26844a', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            border: 1,
-                            borderColor: 'text.primary',
-                            color: 'white',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          DOING
-                        </Button>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold', color: '#a6a6a6' }}>
-                          Low
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                          2020-11-8 18:55
-                        </Typography>
-                      </TableCell>
-                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#ec7272',
-                            '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            mr: 1,
-                            background: '#62b1ea',
-                            '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
-                            borderRadius: 25,
-                            borderColor: 'text.primary',
-                            fontWeight: 'bold',
-                            fontSize: 11
-                          }}
-                        >
-                          Restore
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+                    {todos !== null &&
+                      todos.map((todo) => (
+                        <TableRow key={todo.id}>
+                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                            {todo.title}
+                          </TableCell>
+                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                            <Button
+                              variant="contained"
+                              sx={{
+                                background: '#f0fff4',
+                                '&:hover': { background: '#fff', opacity: [0.9, 0.8, 0.7] },
+                                borderRadius: 25,
+                                border: 1,
+                                borderColor: 'text.primary',
+                                color: 'black',
+                                fontWeight: 'bold',
+                                fontSize: 8
+                              }}
+                            >
+                              NOT STARTED
+                            </Button>
+                          </TableCell>
+                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                            <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold', color: '#9a5656' }}>
+                              {todo.priority}
+                            </Typography>
+                          </TableCell>
+                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                            <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
+                              {parseTimestampToDate(todo.create, '-')}
+                            </Typography>
+                          </TableCell>
+                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                            <Button
+                              variant="contained"
+                              sx={{
+                                mr: 1,
+                                background: '#ec7272',
+                                '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
+                                borderRadius: 25,
+                                borderColor: 'text.primary',
+                                fontWeight: 'bold',
+                                fontSize: 11
+                              }}
+                              onClick={() => deleteTodo(todo.id)}
+                            >
+                              Delete
+                            </Button>
+                            <Button
+                              variant="contained"
+                              sx={{
+                                mr: 1,
+                                background: '#62b1ea',
+                                '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
+                                borderRadius: 25,
+                                borderColor: 'text.primary',
+                                fontWeight: 'bold',
+                                fontSize: 11
+                              }}
+                              onClick={() => restoreTodo(todo.id)}
+                            >
+                              Restore
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -489,8 +268,9 @@ const detail: NextPage = () => {
           </Box>
         </Box>
       </Container>
+      <ConfirmDialog dialog={dialog} setOpen={setDialog} onClickOK={() => onClickConfirmDialogOKBtn()} />
     </>
   )
 }
 
-export default detail
+export default Delete

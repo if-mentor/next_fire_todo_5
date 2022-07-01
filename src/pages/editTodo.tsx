@@ -7,19 +7,7 @@ import { doc, getDoc, Timestamp, updateDoc, serverTimestamp } from 'firebase/fir
 import { db } from '../firebaseConfig'
 import { parseTimestampToDate } from '../utils/DataFormat'
 import useSnackbar from '../hooks/useSnackbar'
-
-type Todo = {
-  id: string
-  title: string
-  detail: string
-  status: 'NOT STARTED' | 'DOING' | 'DONE'
-  priority: 'Low' | 'Middle' | 'High'
-  create: Timestamp
-  update: Timestamp
-  isDraft: boolean
-  author: string
-  editor: string
-}
+import { Todo } from '../types/todo'
 
 // firestore root directory
 const rootDir = 'todos'
@@ -136,15 +124,11 @@ const EditTodo = () => {
                 <Box display="flex">
                   <Box mr={2}>
                     <Typography>Create</Typography>
-                    <p style={{ margin: '0 0 0 10px', fontWeight: 600 }}>
-                      {parseTimestampToDate(todo.create, '-', true)}
-                    </p>
+                    <p style={{ margin: '0 0 0 10px', fontWeight: 600 }}>{parseTimestampToDate(todo.create, '-')}</p>
                   </Box>
                   <Box>
                     <Typography>Update</Typography>
-                    <p style={{ margin: '0 0 0 10px', fontWeight: 600 }}>
-                      {parseTimestampToDate(todo.update, '-', true)}
-                    </p>
+                    <p style={{ margin: '0 0 0 10px', fontWeight: 600 }}>{parseTimestampToDate(todo.update, '-')}</p>
                   </Box>
                 </Box>
                 <SButton

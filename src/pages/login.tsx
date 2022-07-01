@@ -1,24 +1,32 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  CssBaseline,
-  FormControlLabel,
-  Grid,
-  TextField,
-  Typography
-} from '@mui/material'
+import { Avatar, Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material'
+import { auth } from '../firebaseConfig'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { useRouter } from 'next/router'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { FormInput, schema } from '../FormValidation'
+import { useForm, SubmitHandler } from 'react-hook-form'
 
 export default function Login() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormInput>({
+    resolver: yupResolver(schema)
+  })
+
+  const onSubmit: SubmitHandler<FormInput> = (data: FormInput, event: any) => {
     event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    console.log({
-      email: data.get('email'),
-      password: data.get('password')
+    const { email, password } = data
+    signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+      router.push('/')
+      alert('サインアップが完了しました。')
+      console.log(userCredential)
     })
+    console.log(email)
+    console.log(password)
   }
 
   return (
@@ -37,29 +45,39 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             ログイン
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            // component="form"
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required
               fullWidth
               id="email"
               label="Eメールアドレス"
-              name="email"
+              type="email"
+              // name="email"
               autoComplete="email"
               autoFocus
+              {...register('email')}
+              error={'email' in errors}
+              helperText={errors.email?.message}
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              name="password"
+              // name="password"
               label="パスワード"
               type="password"
               id="password"
               autoComplete="current-password"
+              {...register('password')}
+              error={'password' in errors}
+              helperText={errors.password?.message}
             />
             <Button
-              type="submit"
+              // type="submit"
               fullWidth
               variant="contained"
               sx={{
@@ -71,6 +89,7 @@ export default function Login() {
                   opacity: [0.9, 0.8, 0.7]
                 }
               }}
+              onClick={handleSubmit(onSubmit)}
             >
               ログイン
             </Button>

@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import type { NextPage } from 'next'
+import Link from 'next/link'
+
 import {
   Box,
   Container,
@@ -7,6 +9,7 @@ import {
   FormControl,
   IconButton,
   InputBase,
+  InputLabel,
   MenuItem,
   Pagination,
   Paper,
@@ -27,9 +30,8 @@ import SearchIcon from '@mui/icons-material/Search'
 import RestoreFromTrashOutlinedIcon from '@mui/icons-material/RestoreFromTrashOutlined'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import Link from 'next/link'
 import { db } from '../firebaseConfig'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
 
 const Home: NextPage = () => {
@@ -45,8 +47,11 @@ const Home: NextPage = () => {
     }
   ])
 
-  const q = query(collection(db, 'todos'), orderBy('create'))
+  const [sort, setSort] = useState('')
+  // ソートはデフォルトが昇順になっている
+  const q = query(collection(db, 'todos'), where('isDraft', '==', false), where('isTrash', '==', false), orderBy('create'))
   const [keyword, setKeyword] = useState('')
+
   const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
     const unSub = onSnapshot(q, (querySnapshot) => {
@@ -57,12 +62,12 @@ const Home: NextPage = () => {
           status: todo.data().status,
           priority: todo.data().priority,
           create: parseTimestampToDate(todo.data().create, '-'),
-          update: parseTimestampToDate(todo.data().update, '-'),
-          isDraft: todo.data().isDraft
+          update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : '更新中',
+          isDraft: todo.data().isDraft,
+          isTrash: todo.data().isTrash
         }))
       )
     })
-
     return () => unSub()
   }, [])
 
@@ -81,18 +86,15 @@ const Home: NextPage = () => {
     setKeyword('')
   }
 
-  const todoStatus = (status: string) => {
-    switch (status) {
-      case 'NOT STARTED':
-        return <NotStartedComponent>{status}</NotStartedComponent>
-      case 'DOING':
-        return <DoingComponent>{status}</DoingComponent>
-      case 'DONE':
-        return <DoneComponent>{status}</DoneComponent>
-    }
+  const trashTodo = (id: string) => {
+    ;(async () => {
+      await updateDoc(doc(db, 'todos', id), {
+        isTrash: true
+      })
+    })()
   }
 
-  const keywordChange = (event: SelectChangeEvent) => {
+  const keywordChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setKeyword(event.target.value as string)
   }
 
@@ -117,6 +119,32 @@ const Home: NextPage = () => {
     )
     setFilteredRows(result)
   }, [keyword, todos])
+
+  const changeStatus = (e: SelectChangeEvent, id: string) => {
+    const status = e.target.value
+    updateDoc(doc(db, 'todos', id), {
+      status: status,
+      update: serverTimestamp()
+    })
+  }
+
+  const changePriority = (e: SelectChangeEvent, id: string) => {
+    const priority = e.target.value
+    updateDoc(doc(db, 'todos', id), {
+      priority: priority,
+      update: serverTimestamp()
+    })
+  }
+  const changeSort = (e: SelectChangeEvent) => {
+    setSort(e.target.value)
+
+    if (e.target.value === 'asc') {
+      setFilteredRows(filteredRows.sort((a, b) => new Date(a.create).getTime() - new Date(b.create).getTime()))
+    } else {
+      setFilteredRows(filteredRows.sort((a, b) => new Date(b.create).getTime() - new Date(a.create).getTime()))
+    }
+  }
+
   return (
     <>
       <Container
@@ -148,7 +176,7 @@ const Home: NextPage = () => {
               }}
             >
               <InputBase
-                onChange={keywordChange}
+                onChange={(e) => keywordChange(e)}
                 sx={{ ml: 1, flex: 1, fontWeight: 'bold' }}
                 placeholder="Text"
                 inputProps={{ 'aria-label': 'search todo text' }}
@@ -225,7 +253,9 @@ const Home: NextPage = () => {
                 }
               }}
             >
-              <RestoreFromTrashOutlinedIcon sx={icon} />
+              <Link href="/delete">
+                <RestoreFromTrashOutlinedIcon sx={icon} />
+              </Link>
             </Box>
             <Box
               mr={2}
@@ -268,7 +298,24 @@ const Home: NextPage = () => {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow sx={{ background: '#68D391' }}>
-                <TableCell sx={{ fontSize: '24px', fontWeight: 'bold' }}>Task</TableCell>
+                <TableCell sx={{ fontSize: '24px', fontWeight: 'bold' }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label" sx={{ fontSize: '24px', fontWeight: 'bold' }}>
+                      Task
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={sort}
+                      label="Age"
+                      onChange={(e: SelectChangeEvent) => changeSort(e)}
+                      sx={{ fontSize: '20px', fontWeight: 'bold' }}
+                    >
+                      <MenuItem value="asc">昇順</MenuItem>
+                      <MenuItem value="desc">降順</MenuItem>
+                    </Select>
+                  </FormControl>
+                </TableCell>
                 <TableCell
                   align="right"
                   sx={{
@@ -324,7 +371,6 @@ const Home: NextPage = () => {
             <TableBody>
               {filteredRows.map((todo: any) => {
                 if (
-                  todo.isDraft === false &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
                 ) {
@@ -342,11 +388,29 @@ const Home: NextPage = () => {
                           <a>{todo.title}</a>
                         </Link>
                       </TableCell>
-                      <TableCell align="right">{todoStatus(todo.status)}</TableCell>
                       <TableCell align="right">
                         <FormControl fullWidth>
                           <Select
-                            value={todo.priority}
+                            value={todo.status ?? ''}
+                            onChange={(e: SelectChangeEvent) => changeStatus(e, todo.id)}
+                            sx={{
+                              border: '2px solid #EC7272',
+                              borderRadius: '15px',
+                              textAlign: 'left',
+                              height: '50px'
+                            }}
+                          >
+                            <MenuItem value="NOT STARTED">NOT STARTED</MenuItem>
+                            <MenuItem value="DOING">DOING</MenuItem>
+                            <MenuItem value="DONE">DONE</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="right">
+                        <FormControl fullWidth>
+                          <Select
+                            value={todo.priority ?? ''}
+                            onChange={(e: SelectChangeEvent) => changePriority(e, todo.id)}
                             sx={{
                               border: '2px solid #EC7272',
                               borderRadius: '15px',
@@ -366,28 +430,29 @@ const Home: NextPage = () => {
                       <TableCell align="right" sx={{ fontWeight: 'bold' }}>
                         {todo.update}
                       </TableCell>
-                      <TableCell align="right">
-                        <Link href={`editTodo?id=${todo.id}`}>
-                          <EditOutlinedIcon
-                            sx={{
-                              borderRadius: '8px',
-                              marginRight: '10px',
-                              '&:hover': {
-                                background: 'gray',
-                                color: 'white'
-                              }
-                            }}
-                          />
-                        </Link>
-                        <DeleteOutlineOutlinedIcon
+                      <TableCell align="center">
+                        <IconButton
+                          href={`editTodo?id=${todo.id}`}
                           sx={{
-                            borderRadius: '8px',
                             '&:hover': {
                               background: 'gray',
                               color: 'white'
                             }
                           }}
-                        />
+                        >
+                          <EditOutlinedIcon />
+                        </IconButton>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: 'gray',
+                              color: 'white'
+                            }
+                          }}
+                          onClick={() => trashTodo(todo.id)}
+                        >
+                          <DeleteOutlineOutlinedIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   )
@@ -418,42 +483,6 @@ const ResetBtn = styled('button')({
     background: '#858585',
     color: 'white'
   }
-})
-
-const NotStartedComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#F0FFF4',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'black',
-  fontSize: '12px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '14px 0px'
-})
-
-const DoingComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#25855A',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'white',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '10px'
-})
-
-const DoneComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#68D391',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'black',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '10px'
 })
 
 const icon = {
