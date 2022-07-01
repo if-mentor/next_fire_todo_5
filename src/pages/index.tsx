@@ -49,7 +49,12 @@ const Home: NextPage = () => {
 
   const [sort, setSort] = useState('')
   // ソートはデフォルトが昇順になっている
-  const q = query(collection(db, 'todos'), where('isDraft', '==', false), where('isTrash', '==', false), orderBy('create'))
+  const q = query(
+    collection(db, 'todos'),
+    where('isDraft', '==', false),
+    where('isTrash', '==', false),
+    orderBy('create')
+  )
   const [keyword, setKeyword] = useState('')
 
   const [filteredRows, setFilteredRows] = useState(todos)

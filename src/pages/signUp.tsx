@@ -75,19 +75,14 @@ export default function SignUp() {
       return
     }
 
+    if (password === password.slice(0, 1).repeat(password.length)) {
+      setMessage('パスワードが全て同じ文字です')
+      return
+    }
+
     // Firebase Authを使い、メールアドレスとパスワードを登録
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user
-
-        // ここにサインアップしたユーザーのログイン処理を後々入れる
-        // ログイン機能で使うであろうemailとpasswordとuid
-        console.log({
-          email: user.email,
-          password: password,
-          uid: user.uid
-        })
-
+      .then(() => {
         router.push('/')
       })
       .catch((error) => {

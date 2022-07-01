@@ -31,12 +31,14 @@ const Test = () => {
     setPassword(event.currentTarget.value)
   }
   const handleSignOut = (event: any) => {
-    signOut(auth).then(() => {
-      router.push('/login')
-      alert('サインアウトしました')
-    }).catch((error) => {
-      alert('エラーが発生しました')
-    });
+    signOut(auth)
+      .then(() => {
+        router.push('/login')
+        alert('サインアウトしました')
+      })
+      .catch((error) => {
+        alert('エラーが発生しました')
+      })
   }
 
   return (
