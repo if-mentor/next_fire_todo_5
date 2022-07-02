@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
-import { Container, FormLabel, OutlinedInput, Typography, Box, Stack, styled } from '@mui/material'
+import { Container, FormLabel, OutlinedInput, Typography, Box, Stack, styled, Input } from '@mui/material'
 import { CircularProgress } from '@mui/material'
-import { doc, getDoc, Timestamp, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
-import { parseTimestampToDate } from '../utils/DataFormat'
 import useSnackbar from '../hooks/useSnackbar'
+import { parseTimestampToDate } from '../utils/DataFormat'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { Todo } from '../types/todo'
 
 // firestore root directory
@@ -33,26 +35,14 @@ const EditTodo = () => {
     event.preventDefault()
 
     // TITLEが0文字の場合のエラー
-    if (todo!.title.length === 0) {
+    if (todo === null || todo.title.length === 0) {
       setMessage('TITLEが入力されていません。')
       return
     }
 
     // DETAILが0文字の場合のエラー
-    if (todo!.detail.length === 0) {
+    if (todo === null || todo.detail.length === 0) {
       setMessage('DETAILが入力されていません。')
-      return
-    }
-
-    // TITLEが37文字以上の場合にエラー表示
-    if (todo!.title.length >= 37) {
-      setMessage('TITLEは37文字以上入力できません')
-      return
-    }
-
-    // DETIALが128文字以上の場合にエラー表示
-    if (todo!.detail.length >= 129) {
-      setMessage('DETAILは129文字以上入力できません')
       return
     }
 
@@ -105,20 +95,36 @@ const EditTodo = () => {
               </FormLabel>
               <FormLabel sx={{ fontWeight: 600, fontSize: '20px' }}>
                 <div>DETAIL</div>
-                <OutlinedInput
-                  id="detail"
-                  name="detail"
-                  fullWidth
-                  multiline
-                  value={todo.detail}
-                  onChange={(e) => setTodo({ ...todo, detail: e.target.value })}
-                  sx={{
-                    minHeight: '280px',
-                    alignItems: 'start',
-                    fontWeight: 600,
-                    borderRadius: '10px'
-                  }}
-                />
+                <Box sx={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px' }}>
+                  <Box sx={{ flex: 1, margin: '0 10px' }}>
+                    <Typography>Context</Typography>
+                    <Input
+                      id="detail"
+                      name="detail"
+                      fullWidth
+                      value={todo.detail}
+                      disableUnderline
+                      multiline
+                      onChange={(e) => setTodo({ ...todo, detail: e.target.value })}
+                      sx={{
+                        height: '300px',
+                        alignItems: 'start',
+                        fontWeight: 600,
+                        overflow: 'scroll',
+                        border: 'solid 1px #f5f5f5',
+                        borderRadius: '10px'
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ flex: 1, margin: '0 10px' }}>
+                    <Typography>Preview</Typography>
+                    <Box height="300px" overflow="scroll" border="solid 1px #f5f5f5" borderRadius="10px">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} className="markdown-body line-break">
+                        {todo.detail}
+                      </ReactMarkdown>
+                    </Box>
+                  </Box>
+                </Box>
               </FormLabel>
               <Box component="div" sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Box display="flex">

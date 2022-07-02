@@ -389,7 +389,7 @@ const Home: NextPage = () => {
                       }}
                     >
                       <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Link href={`/todo/${todo.id}`}>
+                        <Link href={`/detail?id=${todo.id}`}>
                           <a>{todo.title}</a>
                         </Link>
                       </TableCell>
