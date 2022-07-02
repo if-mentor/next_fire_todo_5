@@ -3,11 +3,13 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
   CssBaseline,
   Paper,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -18,7 +20,8 @@ import {
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import Container from '@mui/material/Container'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, addDoc, collection, getDocs, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
+import { TextareaAutosize } from '@material-ui/core'
 import { db } from '../firebaseConfig'
 import { Todo } from '../types/todo'
 import { parseTimestampToDate } from '../utils/DataFormat'
@@ -28,8 +31,37 @@ import Link from 'next/link'
 
 const Detail: NextPage = () => {
   const [todo, setTodo] = useState<Todo | null>(null)
+  let randomId = Math.random().toString(32).substring(2)
+  const [open, setOpen] = useState(false)
   const router = useRouter()
   const { id } = router.query
+
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setOpen(false)
+  }
+  const [comments, setComments] = useState([
+    {
+      id: randomId,
+      name: '',
+      detail: '',
+    }
+  ])
+  const q = query(collection(db, 'comments'),orderBy('create'))
+  useEffect(() => {
+    const unSub = onSnapshot(q, (querySnapshot) => {
+      setComments(
+        querySnapshot.docs.map((comment) => ({
+          id: comment.data().id,
+          name: comment.data().name,
+          detail: comment.data().detail,
+        }))
+      )
+    })
+    return () => unSub()
+  }, [])
 
   useEffect(() => {
     // データ取得
@@ -41,8 +73,44 @@ const Detail: NextPage = () => {
     }
   }, [id])
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    const colRef = collection(db, 'comments')
+    if (data.get('comment')  === '') {
+      setOpen(true)
+      return
+    } else if(data.get('name')  === ''){
+      setOpen(true)
+      return
+    }
+
+    const firestoreSubmit = async () => {
+      await addDoc(colRef, {
+        id: '',
+        name: data.get('name'),
+        detail: data.get('detail'),
+        create: serverTimestamp(),
+        author: 'userUID',
+      })
+      const q = await query(collection(db, 'comments'), where('id', '==', 'yet'))
+      const querySnapshot = await getDocs(q)
+      let docId = ''
+      querySnapshot.forEach((doc) => {
+        docId = doc.id
+      })
+    }
+    firestoreSubmit()
+}
+
   if (todo != null) {
     return (
+    <>
+      <Snackbar open={open} autoHideDuration={6000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={handleClose} severity="error">
+          nameまたはcommentが入力されていません。
+        </Alert>
+      </Snackbar>
       <Container component="main" maxWidth="xl">
         <CssBaseline />
         <Box className="big">
@@ -62,7 +130,7 @@ const Detail: NextPage = () => {
                 fontSize: 18
               }}
             >
-              Comment
+              <a href="#commentform">Comment</a>
             </Button>
             <Link href={'/'}>
               <Button
@@ -172,13 +240,13 @@ const Detail: NextPage = () => {
                   <Box sx={{ mr: 10, mt: 1.5, mb: 2 }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Create</Typography>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
-                      {parseTimestampToDate(todo.create, '-', true)}
+                      {parseTimestampToDate(todo.create, '-')}
                     </Typography>
                   </Box>
                   <Box sx={{ mt: 1.5, mb: 2 }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Update</Typography>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
-                      {parseTimestampToDate(todo.update, '-', true)}
+                      {parseTimestampToDate(todo.update, '-')}
                     </Typography>
                   </Box>
                 </Box>
@@ -306,8 +374,122 @@ const Detail: NextPage = () => {
               </Box>
             </Box>
           </Box>
+
+          <Box sx={{ marginTop: "3em" }}>
+              <TableContainer>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ fontSize: '24px', fontWeight: 'bold', background: '#68D391' }}>
+                        CommentList
+                        </TableCell>
+                        <TableCell sx={{ fontSize: '18px',  background: '#68D391' }}>
+                          name
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+
+                        {comments.map((comment) => (
+                          <TableRow key={comment.id}>
+                      <TableCell align="left"   scope="row" sx={{ fontSize: '18px' }}>
+                        {comment.detail}
+                      </TableCell>
+                      <TableCell align="left" sx={{ fontWeight: 'bold' }}>
+                        {comment.name}
+                      </TableCell>
+                          </TableRow>
+                        ))}
+
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+              <Box sx={{ marginTop: "3em" }}>
+              <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+        >
+          <Box
+            sx={{
+              marginLeft: 85
+            }}
+          >
+          </Box>
+          <Box
+            sx={{
+              alignItems: 'left'
+            }}
+          >
+            <Typography component="h2" variant="h5">
+              <a id="commentform">CommentForm</a>
+            </Typography>
+          </Box>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <Typography component="h2" variant="h6">
+              name
+            </Typography>
+            <TextareaAutosize
+              style={{
+                resize: 'none',
+                width: 800,
+                height: 50
+              }}
+              required
+              name="name"
+              id="name"
+              autoComplete="name"
+              placeholder="Text"
+            />
+            <Typography component="h2" variant="h6">
+              comment
+            </Typography>
+            <TextareaAutosize
+              style={{
+                resize: 'none',
+                width: 800,
+                height: 100
+              }}
+              required
+              name="detail"
+              id="detail"
+              autoComplete="detail"
+              placeholder="Text"
+            />
+            <br />
+            <Box
+              sx={{
+                marginLeft: 75
+              }}
+            >
+              <Button
+                type="submit"
+                name="create"
+                variant="contained"
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  background: '#26855A',
+                  '&:hover': {
+                    background: '#2bb32b',
+                    opacity: [0.9, 0.8, 0.7]
+                  },
+                  borderRadius: 25
+                }}
+              >
+                CREATE
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+              </Box>
         </Box>
       </Container>
+      </>
     )
   } else {
     return <CircularProgress />

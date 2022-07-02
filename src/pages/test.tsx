@@ -30,16 +30,6 @@ const Test = () => {
   const handleChangePassword = (event: any) => {
     setPassword(event.currentTarget.value)
   }
-  const handleSignOut = (event: any) => {
-    signOut(auth)
-      .then(() => {
-        router.push('/login')
-        alert('サインアウトしました')
-      })
-      .catch((error) => {
-        alert('エラーが発生しました')
-      })
-  }
 
   return (
     <div>
@@ -63,7 +53,6 @@ const Test = () => {
           <button>登録</button>
         </div>
       </form>
-      <button onClick={handleSignOut}>signout</button>
     </div>
   )
 }
