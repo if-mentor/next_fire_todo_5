@@ -57,7 +57,6 @@ const Home: NextPage = () => {
   )
   const [keyword, setKeyword] = useState('')
 
-  const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
     const unSub = onSnapshot(q, (querySnapshot) => {
       setTodos(
@@ -103,28 +102,6 @@ const Home: NextPage = () => {
     setKeyword(event.target.value as string)
   }
 
-  useEffect(() => {
-    if (keyword === '') {
-      setFilteredRows(todos)
-      return
-    }
-
-    const searchKeywords = keyword
-      .trim()
-      .toLowerCase()
-      .match(/[^\s]+/g)
-
-    if (searchKeywords === null) {
-      setFilteredRows(todos)
-      return
-    }
-
-    const result = todos.filter((todos) =>
-      searchKeywords.every((keyword) => todos.title.toLowerCase().indexOf(keyword) !== -1)
-    )
-    setFilteredRows(result)
-  }, [keyword, todos])
-
   const changeStatus = (e: SelectChangeEvent, id: string) => {
     const status = e.target.value
     updateDoc(doc(db, 'todos', id), {
@@ -144,9 +121,9 @@ const Home: NextPage = () => {
     setSort(e.target.value)
 
     if (e.target.value === 'asc') {
-      setFilteredRows(filteredRows.sort((a, b) => new Date(a.create).getTime() - new Date(b.create).getTime()))
+      setTodos(todos.sort((a, b) => new Date(a.create).getTime() - new Date(b.create).getTime()))
     } else {
-      setFilteredRows(filteredRows.sort((a, b) => new Date(b.create).getTime() - new Date(a.create).getTime()))
+      setTodos(todos.sort((a, b) => new Date(b.create).getTime() - new Date(a.create).getTime()))
     }
   }
 
@@ -374,8 +351,9 @@ const Home: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.map((todo: any) => {
+              {todos.map((todo: any) => {
                 if (
+                  todo.title.match(keyword) &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
                 ) {
