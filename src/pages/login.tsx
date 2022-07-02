@@ -5,6 +5,8 @@ import { useRouter } from 'next/router'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormInput, schema } from '../FormValidation'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import  Link  from 'next/link'
+
 
 export default function Login() {
   const router = useRouter()
@@ -93,6 +95,9 @@ export default function Login() {
             >
               ログイン
             </Button>
+            <Link href="/forgotPassword">
+              <a style={{color: 'blue'}}>パスワードを忘れてしまった方はこちら</a>
+            </Link>
           </Box>
         </Box>
       </Container>
