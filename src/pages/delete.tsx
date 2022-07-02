@@ -215,7 +215,7 @@ const Delete: NextPage = () => {
                           </TableCell>
                           <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
                             <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                              {parseTimestampToDate(todo.create, '-', true)}
+                              {parseTimestampToDate(todo.create, '-')}
                             </Typography>
                           </TableCell>
                           <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>

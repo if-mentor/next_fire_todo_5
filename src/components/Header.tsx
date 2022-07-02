@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material'
 import Box from '@mui/material/Box'
+import Link from 'next/link'
 
 export const Header = () => {
   return (
@@ -13,9 +14,11 @@ export const Header = () => {
           background: '#68D391'
         }}
       >
-        <Typography component="h1" style={{ fontSize: '48px', marginLeft: '60px' }}>
-          TODO
-        </Typography>
+        <Link href="/">
+          <Typography component="h1" style={{ fontSize: '48px', marginLeft: '60px' }}>
+            TODO
+          </Typography>
+        </Link>
       </Box>
     </>
   )
