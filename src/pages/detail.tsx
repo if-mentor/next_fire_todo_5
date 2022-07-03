@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-
+import { auth } from '../firebaseConfig'
 import {
   Alert,
   Box,
   Button,
   CircularProgress,
   CssBaseline,
+  ListItem,
+  ListItemText,
   Paper,
   Snackbar,
   Table,
@@ -28,13 +30,17 @@ import { parseTimestampToDate } from '../utils/DataFormat'
 import remarkGfm from 'remark-gfm'
 import ReactMarkdown from 'react-markdown'
 import Link from 'next/link'
+import Gravatar from 'react-gravatar'
+
 
 const Detail: NextPage = () => {
   const [todo, setTodo] = useState<Todo | null>(null)
   let randomId = Math.random().toString(32).substring(2)
   const [open, setOpen] = useState(false)
+  const [openList, setOpenList] = useState(false)
   const router = useRouter()
   const { id } = router.query
+  const user = auth.currentUser;
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
@@ -130,7 +136,7 @@ const Detail: NextPage = () => {
                 fontSize: 18
               }}
             >
-              <a href="#commentform">Comment</a>
+              <a onClick={() => setOpenList(true)} href="#commentform">Comment</a>
             </Button>
             <Link href={'/'}>
               <Button
@@ -376,34 +382,22 @@ const Detail: NextPage = () => {
           </Box>
 
           <Box sx={{ marginTop: "3em" }}>
-              <TableContainer>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ fontSize: '24px', fontWeight: 'bold', background: '#68D391' }}>
-                        CommentList
-                        </TableCell>
-                        <TableCell sx={{ fontSize: '18px',  background: '#68D391' }}>
-                          name
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
+ 
 
-                        {comments.map((comment) => (
-                          <TableRow key={comment.id}>
-                      <TableCell align="left"   scope="row" sx={{ fontSize: '18px' }}>
-                        {comment.detail}
-                      </TableCell>
-                      <TableCell align="left" sx={{ fontWeight: 'bold' }}>
-                        {comment.name}
-                      </TableCell>
-                          </TableRow>
-                        ))}
-
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+              <Typography sx={{ fontSize: '24px', fontWeight: 'bold', background: '#68D391' }}>
+                          CommentList
+              </Typography>
+                {comments.map((comment) => (
+                  <ListItem divider key={comment.id}>
+                    <ListItemText  sx={{ fontSize: '18px' }}>
+                       {comment.detail}
+                        </ListItemText>
+                      <ListItemText  sx={{ fontWeight: 'bold' }}>
+                      <Gravatar size={40} email='samonkntd@gmail.com' /><br />{comment.name}
+                      </ListItemText>
+                    </ListItem>
+                ))}
+ 
               </Box>
               <Box sx={{ marginTop: "3em" }}>
               <Box
@@ -425,15 +419,16 @@ const Detail: NextPage = () => {
               alignItems: 'left'
             }}
           >
-            <Typography component="h2" variant="h5">
+          {openList ? (
+            <>
+             <Typography component="h2" variant="h5">
               <a id="commentform">CommentForm</a>
-            </Typography>
-          </Box>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <Typography component="h2" variant="h6">
+             </Typography>
+             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+              <Typography component="h2" variant="h6">
               name
-            </Typography>
-            <TextareaAutosize
+              </Typography>
+              <TextareaAutosize
               style={{
                 resize: 'none',
                 width: 800,
@@ -444,11 +439,11 @@ const Detail: NextPage = () => {
               id="name"
               autoComplete="name"
               placeholder="Text"
-            />
-            <Typography component="h2" variant="h6">
-              comment
-            </Typography>
-            <TextareaAutosize
+              />
+              <Typography component="h2" variant="h6">
+                comment
+              </Typography>
+              <TextareaAutosize
               style={{
                 resize: 'none',
                 width: 800,
@@ -459,13 +454,13 @@ const Detail: NextPage = () => {
               id="detail"
               autoComplete="detail"
               placeholder="Text"
-            />
-            <br />
-            <Box
+              />
+              <br />
+              <Box
               sx={{
                 marginLeft: 75
               }}
-            >
+              >
               <Button
                 type="submit"
                 name="create"
@@ -485,6 +480,11 @@ const Detail: NextPage = () => {
               </Button>
             </Box>
           </Box>
+            </>
+          ):(<></>)}
+
+          </Box>
+
         </Box>
               </Box>
         </Box>
