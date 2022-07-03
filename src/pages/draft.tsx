@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import type { NextPage } from 'next'
+import Link from 'next/link'
+
 import {
   Box,
   Container,
@@ -7,6 +9,7 @@ import {
   FormControl,
   IconButton,
   InputBase,
+  InputLabel,
   MenuItem,
   Pagination,
   Paper,
@@ -21,44 +24,123 @@ import {
   Typography
 } from '@mui/material'
 import { styled } from '@mui/system'
+import SendIcon from '@mui/icons-material/Send';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import SearchIcon from '@mui/icons-material/Search'
-import SendIcon from '@mui/icons-material/Send'
-import Link from 'next/link'
-
-function createData(task: string, status: string, priority: string, create: string, update: string) {
-  return { task, status, priority, create, update }
-}
-
-const rows = [
-  createData('Github上に静的サイトをホスティングする', 'NOT STARTED', 'High', '2020-11-8 18:55', '2020-11-8 18:55'),
-  createData('ReactでTodoサイトを作成する', 'DOING', 'Low', '2020-11-8 18:56', '2020-11-8 18:56'),
-  createData('Firestore Hostingを学習する', 'DONE', 'Middle', '2020-11-8 18:57', '2020-11-8 18:57'),
-  createData('感謝の正拳突き', 'DOING', 'High', '2020-11-8 18:58', '2020-11-8 18:58'),
-  createData('二重の極み', 'DONE', 'High', '2020-11-8 18:59', '2020-11-8 18:59'),
-  createData('魔封波', 'DOING', 'Low', '2020-11-8 19:00', '2020-11-8 19:00')
-]
+import RestoreFromTrashOutlinedIcon from '@mui/icons-material/RestoreFromTrashOutlined'
+import SaveAsIcon from '@mui/icons-material/SaveAs'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import { db } from '../firebaseConfig'
+import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
+import { parseTimestampToDate } from '../utils/DataFormat'
 
 const Draft: NextPage = () => {
-  const [status, setStatus] = useState('NONE')
-  const [priority, setPriority] = useState('None')
+  const [todos, setTodos] = useState([
+    {
+      id: '',
+      title: '',
+      status: '',
+      priority: '',
+      create: '',
+      update: '',
+      isDraft: true
+    }
+  ])
 
-  const statusChange = (event: SelectChangeEvent) => {
-    setStatus(event.target.value as string)
+  const [sort, setSort] = useState('')
+  // ソートはデフォルトが昇順になっている
+  const q = query(
+    collection(db, 'todos'),
+    where('isDraft', '==', true),
+    where('isTrash', '==', false),
+    orderBy('create')
+  )
+  const [keyword, setKeyword] = useState('')
+
+  useEffect(() => {
+    const unSub = onSnapshot(q, (querySnapshot) => {
+      setTodos(
+        querySnapshot.docs.map((todo) => ({
+          id: todo.data().id,
+          title: todo.data().title,
+          status: todo.data().status,
+          priority: todo.data().priority,
+          create: parseTimestampToDate(todo.data().create, '-'),
+          update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : '更新中',
+          isDraft: todo.data().isDraft,
+          isTrash: todo.data().isTrash
+        }))
+      )
+    })
+    return () => unSub()
+  }, [])
+
+  const [filteringStatus, setFilteringStatus] = useState('NONE')
+  const [filteringPriority, setFilteringPriority] = useState('None')
+
+  const filteringStatusChange = (event: SelectChangeEvent) => {
+    setFilteringStatus(event.target.value as string)
   }
-  const priorityChange = (event: SelectChangeEvent) => {
-    setPriority(event.target.value as string)
+  const filteringPriorityChange = (event: SelectChangeEvent) => {
+    setFilteringPriority(event.target.value as string)
+  }
+  const resetClick = () => {
+    setFilteringStatus('NONE')
+    setFilteringPriority('None')
+    setKeyword('')
   }
 
-  const todoStatus = (status: string) => {
-    switch (status) {
-      case 'NOT STARTED':
-        return <NotStartedComponent>{status}</NotStartedComponent>
-      case 'DOING':
-        return <DoingComponent>{status}</DoingComponent>
-      case 'DONE':
-        return <DoneComponent>{status}</DoneComponent>
+  const trashTodo = (id: string) => {
+    ;(async () => {
+      await updateDoc(doc(db, 'todos', id), {
+        isTrash: true
+      })
+    })()
+  }
+
+  const writeupTodo = (id: string) => {
+    ;(async () => {
+      await updateDoc(doc(db, 'todos', id), {
+        isDraft: false
+      })
+    })()
+  }
+
+  const Todo = (id: string) => {
+    ;(async () => {
+      await updateDoc(doc(db, 'todos', id), {
+        isTrash: true
+      })
+    })()
+  }
+
+  const keywordChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setKeyword(event.target.value as string)
+  }
+
+  const changeStatus = (e: SelectChangeEvent, id: string) => {
+    const status = e.target.value
+    updateDoc(doc(db, 'todos', id), {
+      status: status,
+      update: serverTimestamp()
+    })
+  }
+
+  const changePriority = (e: SelectChangeEvent, id: string) => {
+    const priority = e.target.value
+    updateDoc(doc(db, 'todos', id), {
+      priority: priority,
+      update: serverTimestamp()
+    })
+  }
+  const changeSort = (e: SelectChangeEvent) => {
+    setSort(e.target.value)
+
+    if (e.target.value === 'asc') {
+      setTodos(todos.sort((a, b) => new Date(a.create).getTime() - new Date(b.create).getTime()))
+    } else {
+      setTodos(todos.sort((a, b) => new Date(b.create).getTime() - new Date(a.create).getTime()))
     }
   }
 
@@ -73,24 +155,9 @@ const Draft: NextPage = () => {
         }}
       >
         <CssBaseline />
-        <Box mb={3} sx={{ display: 'flex', overflowX: 'auto' }}>
-          <Typography component="h1" variant="h4" mt={3} sx={{ fontWeight: 'bold' }}>
-            TODO DRAFT
-          </Typography>
-          <Link href="/">
-            <SButton
-              sx={{
-                backgroundColor: '#9ae6b4',
-                color: '#000',
-                marginTop: '30px',
-                marginLeft: 'auto',
-                '&:hover': { backgroundColor: '#9ae6b4' }
-              }}
-            >
-              Back
-            </SButton>
-          </Link>
-        </Box>
+        <Typography component="h1" variant="h4" mt={3} mb={2} sx={{ fontWeight: 'bold' }}>
+          TODO LIST
+        </Typography>
         <Box mb={3} sx={{ display: 'flex', overflowX: 'auto' }}>
           <Box mr={3} sx={{ width: '190px' }}>
             <Typography variant="h6">SEARCH</Typography>
@@ -108,6 +175,7 @@ const Draft: NextPage = () => {
               }}
             >
               <InputBase
+                onChange={(e) => keywordChange(e)}
                 sx={{ ml: 1, flex: 1, fontWeight: 'bold' }}
                 placeholder="Text"
                 inputProps={{ 'aria-label': 'search todo text' }}
@@ -129,7 +197,7 @@ const Draft: NextPage = () => {
                 height: '50px'
               }}
             >
-              <Select value={status} onChange={statusChange}>
+              <Select value={filteringStatus} onChange={filteringStatusChange}>
                 <MenuItem value="NONE">- - - - - - -</MenuItem>
                 <MenuItem value="NOT STARTED">NOT STARTED</MenuItem>
                 <MenuItem value="DOING">DOING</MenuItem>
@@ -149,7 +217,7 @@ const Draft: NextPage = () => {
                 height: '50px'
               }}
             >
-              <Select value={priority} onChange={priorityChange}>
+              <Select value={filteringPriority} onChange={filteringPriorityChange}>
                 <MenuItem value="None">- - - - - - -</MenuItem>
                 <MenuItem value="Low">Low</MenuItem>
                 <MenuItem value="Middle">Middle</MenuItem>
@@ -166,14 +234,87 @@ const Draft: NextPage = () => {
               marginBottom: '8px'
             }}
           >
-            <ResetBtn sx={{}}>RESET</ResetBtn>
+            <ResetBtn onClick={resetClick}>RESET</ResetBtn>
+          </Box>
+          <Box sx={{ display: 'flex' }}>
+            <Box
+              mr={2}
+              sx={{
+                background: '#F6E05E',
+                border: '8px solid #F6E05E',
+                borderRadius: '30px',
+                height: '50px',
+                width: '50px',
+                '&:hover': {
+                  background: '#ccb94e',
+                  borderColor: '#ccb94e',
+                  color: 'white'
+                }
+              }}
+            >
+              <Link href="/delete">
+                <RestoreFromTrashOutlinedIcon sx={icon} />
+              </Link>
+            </Box>
+            <Box
+              mr={2}
+              sx={{
+                background: '#FED7E2',
+                border: '8px solid #FED7E2',
+                borderRadius: '30px',
+                height: '50px',
+                width: '50px',
+                '&:hover': {
+                  background: '#d4b2bb',
+                  borderColor: '#d4b2bb',
+                  color: 'white'
+                }
+              }}
+            >
+              <SaveAsIcon sx={icon} />
+            </Box>
+            <Box
+              sx={{
+                background: '#68D391',
+                border: '8px solid #68D391',
+                borderRadius: '30px',
+                height: '50px',
+                width: '50px',
+                '&:hover': {
+                  background: '#55ab76',
+                  borderColor: '#55ab76',
+                  color: 'white'
+                }
+              }}
+            >
+              <Link href="/createTodo">
+                <OpenInNewIcon sx={icon} />
+              </Link>
+            </Box>
           </Box>
         </Box>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow sx={{ background: '#68D391' }}>
-                <TableCell sx={{ fontSize: '24px', fontWeight: 'bold' }}>Task</TableCell>
+                <TableCell sx={{ fontSize: '24px', fontWeight: 'bold' }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label" sx={{ fontSize: '24px', fontWeight: 'bold' }}>
+                      Task
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={sort}
+                      label="Age"
+                      onChange={(e: SelectChangeEvent) => changeSort(e)}
+                      sx={{ fontSize: '20px', fontWeight: 'bold' }}
+                    >
+                      <MenuItem value="asc">昇順</MenuItem>
+                      <MenuItem value="desc">降順</MenuItem>
+                    </Select>
+                  </FormControl>
+                </TableCell>
                 <TableCell
                   align="right"
                   sx={{
@@ -227,75 +368,110 @@ const Draft: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.create}
-                  sx={{
-                    '&:last-child td, &:last-child th': {
-                      border: 0
-                    }
-                  }}
-                >
-                  <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                    {row.task}
-                  </TableCell>
-                  <TableCell align="right">{todoStatus(row.status)}</TableCell>
-                  <TableCell align="right">
-                    <FormControl fullWidth>
-                      <Select
-                        value={row.priority}
-                        sx={{
-                          border: '2px solid #EC7272',
-                          borderRadius: '15px',
-                          textAlign: 'left',
-                          height: '50px'
-                        }}
-                      >
-                        <MenuItem value="Low">Low</MenuItem>
-                        <MenuItem value="Middle">Middle</MenuItem>
-                        <MenuItem value="High">High</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-                    {row.create}
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-                    {row.update}
-                  </TableCell>
-                  <TableCell align="right">
-                    <SendIcon
+              {todos.map((todo: any) => {
+                if (
+                  todo.title.match(keyword) &&
+                  (filteringStatus === todo.status || filteringStatus === 'NONE') &&
+                  (filteringPriority === todo.priority || filteringPriority === 'None')
+                ) {
+                  return (
+                    <TableRow
+                      key={todo.id}
                       sx={{
-                        borderRadius: '8px',
-                        marginRight: '10px',
-                        '&:hover': {
-                          background: 'gray',
-                          color: 'white'
+                        '&:last-child td, &:last-child th': {
+                          border: 0
                         }
                       }}
-                    />
-                    <EditOutlinedIcon
-                      sx={{
-                        borderRadius: '8px',
-                        marginRight: '10px',
-                        '&:hover': {
-                          background: 'gray',
-                          color: 'white'
-                        }
-                      }}
-                    />
-                    <DeleteOutlineOutlinedIcon
-                      sx={{
-                        borderRadius: '8px',
-                        '&:hover': {
-                          background: 'gray',
-                          color: 'white'
-                        }
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+                    >
+                      <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                        <Link href={`/detail?id=${todo.id}`}>
+                          <a>{todo.title}</a>
+                        </Link>
+                      </TableCell>
+                      <TableCell align="right">
+                        <FormControl fullWidth>
+                          <Select
+                            value={todo.status ?? ''}
+                            onChange={(e: SelectChangeEvent) => changeStatus(e, todo.id)}
+                            sx={{
+                              border: '2px solid #EC7272',
+                              borderRadius: '15px',
+                              textAlign: 'left',
+                              height: '50px'
+                            }}
+                          >
+                            <MenuItem value="NOT STARTED">NOT STARTED</MenuItem>
+                            <MenuItem value="DOING">DOING</MenuItem>
+                            <MenuItem value="DONE">DONE</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="right">
+                        <FormControl fullWidth>
+                          <Select
+                            value={todo.priority ?? ''}
+                            onChange={(e: SelectChangeEvent) => changePriority(e, todo.id)}
+                            sx={{
+                              border: '2px solid #EC7272',
+                              borderRadius: '15px',
+                              textAlign: 'left',
+                              height: '50px'
+                            }}
+                          >
+                            <MenuItem value="Low">Low</MenuItem>
+                            <MenuItem value="Middle">Middle</MenuItem>
+                            <MenuItem value="High">High</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                        {todo.create}
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                        {todo.update}
+                      </TableCell>
+                      <TableCell align="center">
+                      <IconButton
+                          href={`editTodo?id=${todo.id}`}
+                          sx={{
+                            '&:hover': {
+                              background: 'gray',
+                              color: 'white'
+                            }
+                          }}
+                          onClick={() => writeupTodo(todo.id)}
+                        >
+                          <SendIcon />
+                        </IconButton>
+                        <IconButton
+                          href={`editTodo?id=${todo.id}`}
+                          sx={{
+                            '&:hover': {
+                              background: 'gray',
+                              color: 'white'
+                            }
+                          }}
+                          
+                        >
+                          
+                          <EditOutlinedIcon />
+                        </IconButton>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: 'gray',
+                              color: 'white'
+                            }
+                          }}
+                          onClick={() => trashTodo(todo.id)}
+                        >
+                          <DeleteOutlineOutlinedIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  )
+                }
+              })}
             </TableBody>
           </Table>
         </TableContainer>
@@ -323,52 +499,15 @@ const ResetBtn = styled('button')({
   }
 })
 
-const NotStartedComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#F0FFF4',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'black',
-  fontSize: '12px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '14px 0px'
-})
-
-const DoingComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#25855A',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'white',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '10px'
-})
-
-const DoneComponent = styled('div')({
-  boxSizing: 'border-box',
-  background: '#68D391',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  borderRadius: '50px',
-  color: 'black',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  textAlign: 'center',
-  padding: '10px'
-})
-
-// Button 共通スタイル
-const SButton = styled('button')({
-  height: '40px',
-  width: '112px',
-  borderRadius: '100px',
-  border: '1px solid #000',
-  fontWeight: 600,
-  '&:hover': {
-    opacity: 0.7
-  }
-})
+const icon = {
+  positon: 'absolute',
+  top: '0',
+  right: '0',
+  left: '0',
+  bottom: '0',
+  margin: 'auto',
+  width: '100%',
+  height: '100%'
+}
 
 export default Draft
