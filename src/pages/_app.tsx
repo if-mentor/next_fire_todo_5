@@ -7,8 +7,8 @@ import { Header } from '../components/Header'
 function MyApp({ Component, pageProps }: any) {
   return (
     <>
-      <Header />
       <RecoilRoot>
+        <Header />
         <Component {...pageProps} />
       </RecoilRoot>
     </>
