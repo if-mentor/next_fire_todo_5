@@ -3,11 +3,18 @@ import Box from '@mui/material/Box'
 import { signOut } from 'firebase/auth'
 import Link from 'next/link'
 import { auth } from '../firebaseConfig'
+import { useRecoilState, useSetRecoilState } from 'recoil'
+import { isLoginState, uidState } from '../atoms'
 
 export const Header = () => {
+  const [isLogin, setIsLogin] = useRecoilState(isLoginState)
+  const setUid = useSetRecoilState(uidState)
+
   const clickLogout = () => {
     signOut(auth)
       .then(() => {
+        setIsLogin(false)
+        setUid('')
         console.log('ログアウト完了')
       })
       .catch((error) => {
@@ -32,12 +39,33 @@ export const Header = () => {
             TODO
           </Typography>
         </Link>
+        <Link href="/login">
+          <Button
+            variant="contained"
+            disabled={isLogin}
+            sx={{
+              mt: 3,
+              mr: 1,
+              ml: 'auto',
+              mb: 2,
+              background: '#68D391',
+              '&:hover': {
+                background: '#68D391',
+                opacity: [0.9, 0.8, 0.7]
+              }
+            }}
+          >
+            ログイン
+          </Button>
+        </Link>
+
         <Button
           variant="contained"
+          disabled={!isLogin}
           sx={{
             mt: 3,
             mr: 10,
-            ml: 'auto',
+            ml: 1,
             mb: 2,
             background: '#68D391',
             '&:hover': {
