@@ -172,13 +172,13 @@ const Detail: NextPage = () => {
                   <Box sx={{ mr: 10, mt: 1.5, mb: 2 }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Create</Typography>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
-                      {parseTimestampToDate(todo.create, '-', true)}
+                      {parseTimestampToDate(todo.create, '-')}
                     </Typography>
                   </Box>
                   <Box sx={{ mt: 1.5, mb: 2 }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Update</Typography>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
-                      {parseTimestampToDate(todo.update, '-', true)}
+                      {parseTimestampToDate(todo.update, '-')}
                     </Typography>
                   </Box>
                 </Box>

@@ -34,10 +34,19 @@ import { db } from '../firebaseConfig'
 import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
 import { useRecoilValue } from 'recoil'
-import { uidState } from '../atoms'
+import { isLoginState, uidState } from '../atoms'
+import { useRouter } from 'next/router'
 
 const Home: NextPage = () => {
+  const router = useRouter()
+  const isLogin = useRecoilValue(isLoginState)
   const loginUid = useRecoilValue(uidState)
+
+  useEffect(() => {
+    if (isLogin === false) {
+      router.push('/welcome')
+    }
+  }, [isLogin])
 
   const [todos, setTodos] = useState([
     {
