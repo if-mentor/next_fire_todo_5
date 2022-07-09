@@ -6,13 +6,20 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { FormInput, schema } from '../FormValidation'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import Link from 'next/link'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 import { isLoginState, uidState } from '../atoms'
+import { useEffect } from 'react'
 
 export default function Login() {
   const router = useRouter()
-  const setIsLogin = useSetRecoilState(isLoginState)
+  const [isLogin, setIsLogin] = useRecoilState(isLoginState)
   const setUid = useSetRecoilState(uidState)
+
+  useEffect(() => {
+    if (isLogin === true) {
+      router.push('/')
+    }
+  }, [isLogin])
 
   const {
     register,
