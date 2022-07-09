@@ -131,25 +131,7 @@ const Detail: NextPage = () => {
       <Container component="main" maxWidth="xl">
         <CssBaseline />
         <Box className="big">
-          <Box sx={{ textAlign: 'right', marginLeft: 'auto' }}>
-            <Button
-              variant="contained"
-              sx={{
-                mt: 3,
-                mb: 2,
-                mr: 5,
-                background: '#008753',
-                '&:hover': { background: '#68D391', opacity: [0.9, 0.8, 0.7] },
-                borderRadius: 25,
-                border: 1,
-                borderColor: 'text.primary',
-                fontWeight: 'bold',
-                fontSize: 18
-              }}
-            >
-              <a onClick={() => setOpenList(true)} href="#commentform">Comment</a>
-            </Button>
-            <Link href={'/'}>
+          <Box sx={{ textAlign: 'right', marginLeft: 'auto' }}>       
               <Button
                 variant="contained"
                 sx={{
@@ -169,7 +151,6 @@ const Detail: NextPage = () => {
                   Comment
                 </a>
               </Button>
-              </Link>
               <Link href={'/'}>
                 <Button
                   variant="contained"
