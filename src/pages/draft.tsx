@@ -24,7 +24,7 @@ import {
   Typography
 } from '@mui/material'
 import { styled } from '@mui/system'
-import SendIcon from '@mui/icons-material/Send';
+import SendIcon from '@mui/icons-material/Send'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import SearchIcon from '@mui/icons-material/Search'
@@ -431,7 +431,7 @@ const Draft: NextPage = () => {
                         {todo.update}
                       </TableCell>
                       <TableCell align="center">
-                      <IconButton
+                        <IconButton
                           href={`editTodo?id=${todo.id}`}
                           sx={{
                             '&:hover': {
@@ -451,9 +451,7 @@ const Draft: NextPage = () => {
                               color: 'white'
                             }
                           }}
-                          
                         >
-                          
                           <EditOutlinedIcon />
                         </IconButton>
                         <IconButton
