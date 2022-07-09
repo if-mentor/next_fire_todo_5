@@ -19,9 +19,13 @@ import {
 import { addDoc, collection, doc, getDocs, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 
 import { db } from '../firebaseConfig'
+import { useRecoilValue } from 'recoil'
+import { uidState } from '../atoms'
 
 export default function CreateTodo() {
   const router = useRouter()
+  const loginUid = useRecoilValue(uidState)
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
@@ -44,8 +48,8 @@ export default function CreateTodo() {
         update: serverTimestamp(),
         isDraft: checkDraft,
         isTrash: false,
-        author: 'userUID',
-        editor: 'userUID'
+        author: loginUid,
+        editor: loginUid
       })
       const q = await query(collection(db, 'todos'), where('id', '==', 'yet'))
       const querySnapshot = await getDocs(q)
