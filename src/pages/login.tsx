@@ -5,9 +5,21 @@ import { useRouter } from 'next/router'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormInput, schema } from '../FormValidation'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import Link from 'next/link'
+import { useRecoilState, useSetRecoilState } from 'recoil'
+import { isLoginState, uidState } from '../atoms'
+import { useEffect } from 'react'
 
 export default function Login() {
   const router = useRouter()
+  const [isLogin, setIsLogin] = useRecoilState(isLoginState)
+  const setUid = useSetRecoilState(uidState)
+
+  useEffect(() => {
+    if (isLogin === true) {
+      router.push('/')
+    }
+  }, [isLogin])
 
   const {
     register,
@@ -21,9 +33,10 @@ export default function Login() {
     event.preventDefault()
     const { email, password } = data
     signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+      setIsLogin(true)
+      setUid(userCredential.user.uid)
       router.push('/')
       alert('サインアップが完了しました。')
-      console.log(userCredential)
     })
     console.log(email)
     console.log(password)
@@ -93,6 +106,9 @@ export default function Login() {
             >
               ログイン
             </Button>
+            <Link href="/forgotPassword">
+              <a style={{ color: 'blue' }}>パスワードを忘れてしまった方はこちら</a>
+            </Link>
           </Box>
         </Box>
       </Container>

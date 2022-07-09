@@ -33,21 +33,20 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { db } from '../firebaseConfig'
 import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { useRecoilValue } from 'recoil'
+import { isLoginState, uidState } from '../atoms'
 import { useRouter } from 'next/router'
 
 const Home: NextPage = () => {
-  // ログインしていない場合はwelcomeページに飛ばす
   const router = useRouter()
-  const auth = getAuth()
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      console.log('uid ' + user.uid + ' がログインしています')
-    } else {
-      // welcomeページがまだないため、サインアップに飛ばす
-      router.push('/signUp')
+  const isLogin = useRecoilValue(isLoginState)
+  const loginUid = useRecoilValue(uidState)
+
+  useEffect(() => {
+    if (isLogin === false) {
+      router.push('/welcome')
     }
-  })
+  }, [isLogin])
 
   const [todos, setTodos] = useState([
     {
@@ -71,7 +70,6 @@ const Home: NextPage = () => {
   )
   const [keyword, setKeyword] = useState('')
 
-  const [filteredRows, setFilteredRows] = useState(todos)
   useEffect(() => {
     const unSub = onSnapshot(q, (querySnapshot) => {
       setTodos(
@@ -83,7 +81,8 @@ const Home: NextPage = () => {
           create: parseTimestampToDate(todo.data().create, '-'),
           update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : '更新中',
           isDraft: todo.data().isDraft,
-          isTrash: todo.data().isTrash
+          isTrash: todo.data().isTrash,
+          author: todo.data().author
         }))
       )
     })
@@ -117,28 +116,6 @@ const Home: NextPage = () => {
     setKeyword(event.target.value as string)
   }
 
-  useEffect(() => {
-    if (keyword === '') {
-      setFilteredRows(todos)
-      return
-    }
-
-    const searchKeywords = keyword
-      .trim()
-      .toLowerCase()
-      .match(/[^\s]+/g)
-
-    if (searchKeywords === null) {
-      setFilteredRows(todos)
-      return
-    }
-
-    const result = todos.filter((todos) =>
-      searchKeywords.every((keyword) => todos.title.toLowerCase().indexOf(keyword) !== -1)
-    )
-    setFilteredRows(result)
-  }, [keyword, todos])
-
   const changeStatus = (e: SelectChangeEvent, id: string) => {
     const status = e.target.value
     updateDoc(doc(db, 'todos', id), {
@@ -158,9 +135,9 @@ const Home: NextPage = () => {
     setSort(e.target.value)
 
     if (e.target.value === 'asc') {
-      setFilteredRows(filteredRows.sort((a, b) => new Date(a.create).getTime() - new Date(b.create).getTime()))
+      setTodos(todos.sort((a, b) => new Date(a.create).getTime() - new Date(b.create).getTime()))
     } else {
-      setFilteredRows(filteredRows.sort((a, b) => new Date(b.create).getTime() - new Date(a.create).getTime()))
+      setTodos(todos.sort((a, b) => new Date(b.create).getTime() - new Date(a.create).getTime()))
     }
   }
 
@@ -388,8 +365,10 @@ const Home: NextPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.map((todo: any) => {
+              {todos.map((todo: any) => {
                 if (
+                  todo.author === loginUid &&
+                  todo.title.match(keyword) &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
                 ) {
@@ -403,7 +382,7 @@ const Home: NextPage = () => {
                       }}
                     >
                       <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        <Link href={`/todo/${todo.id}`}>
+                        <Link href={`/detail?id=${todo.id}`}>
                           <a>{todo.title}</a>
                         </Link>
                       </TableCell>

@@ -1,7 +1,11 @@
+import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+
 import {
   Box,
   Button,
+  CircularProgress,
   CssBaseline,
   Paper,
   Table,
@@ -14,10 +18,31 @@ import {
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import Container from '@mui/material/Container'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '../firebaseConfig'
+import { Todo } from '../types/todo'
+import { parseTimestampToDate } from '../utils/DataFormat'
+import remarkGfm from 'remark-gfm'
+import ReactMarkdown from 'react-markdown'
+import Link from 'next/link'
 
-const detail: NextPage = () => {
-  return (
-    <>
+const Detail: NextPage = () => {
+  const [todo, setTodo] = useState<Todo | null>(null)
+  const router = useRouter()
+  const { id } = router.query
+
+  useEffect(() => {
+    // データ取得
+    if (id !== undefined) {
+      ;(async () => {
+        const docSnap = await getDoc(doc(db, 'todos', id as string))
+        docSnap.exists() && setTodo({ ...(docSnap.data() as Todo) })
+      })()
+    }
+  }, [id])
+
+  if (todo != null) {
+    return (
       <Container component="main" maxWidth="xl">
         <CssBaseline />
         <Box className="big">
@@ -39,26 +64,28 @@ const detail: NextPage = () => {
             >
               Comment
             </Button>
-            <Button
-              variant="contained"
-              sx={{
-                pl: 4,
-                pr: 4,
-                mt: 3,
-                mb: 2,
-                mr: 5,
-                background: '#68D391',
-                '&:hover': { background: '#68D391', opacity: [0.9, 0.8, 0.7] },
-                borderRadius: 25,
-                border: 1,
-                borderColor: 'text.primary',
-                color: 'black',
-                fontWeight: 'bold',
-                fontSize: 18
-              }}
-            >
-              Back
-            </Button>
+            <Link href={'/'}>
+              <Button
+                variant="contained"
+                sx={{
+                  pl: 4,
+                  pr: 4,
+                  mt: 3,
+                  mb: 2,
+                  mr: 5,
+                  background: '#68D391',
+                  '&:hover': { background: '#68D391', opacity: [0.9, 0.8, 0.7] },
+                  borderRadius: 25,
+                  border: 1,
+                  borderColor: 'text.primary',
+                  color: 'black',
+                  fontWeight: 'bold',
+                  fontSize: 18
+                }}
+              >
+                Back
+              </Button>
+            </Link>
           </Box>
           <Box sx={{ display: 'flex' }}>
             <Typography component="h1" variant="h4" mb={2} sx={{ fontWeight: 'bold' }}>
@@ -66,7 +93,7 @@ const detail: NextPage = () => {
             </Typography>
           </Box>
           <Box>
-            <Box sx={{ display: 'flex', overflowX: 'auto' }}>
+            <Box sx={{ display: 'flex' }}>
               <Box sx={{ border: 1, borderRadius: 4, p: 2 }}>
                 <TableContainer>
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -79,7 +106,7 @@ const detail: NextPage = () => {
                     </TableHead>
                     <TableBody>
                       <TableRow>
-                        <TableCell sx={{ fontSize: '18px', fontWeight: 'bold' }}>aaaaaaaaa</TableCell>
+                        <TableCell sx={{ fontSize: '18px', fontWeight: 'bold' }}>{todo.title}</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -101,11 +128,14 @@ const detail: NextPage = () => {
                             fontSize: '18px',
                             fontWeight: 'bold',
                             height: '240px',
-                            verticalAlign: 'top',
-                            wordBreak: 'break-word'
+                            verticalAlign: 'top'
                           }}
                         >
-                          aaaahfeihfuhwfiuhewoijfiowejfiojwfijewiofjiowejfioewjiofjwioejifjfiowjeiojf
+                          <Box height="220px" width="650px" overflow="scroll" sx={{ background: 'white' }}>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} className="markdown-body">
+                              {todo.detail}
+                            </ReactMarkdown>
+                          </Box>
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -113,34 +143,43 @@ const detail: NextPage = () => {
                 </TableContainer>
 
                 <Box sx={{ display: 'flex' }}>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      pl: 5,
-                      mr: 10,
-                      mt: 2,
-                      mb: 2,
-                      background: '#68D391',
-                      '&:hover': { background: '#68D391', opacity: [0.9, 0.8, 0.7] },
-                      borderRadius: 25,
-                      border: 1,
-                      borderColor: 'text.primary',
-                      color: 'black',
-                      fontWeight: 'bold',
-                      fontSize: '20px'
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Edit</Typography>
-                    <Box component="span" sx={{ p: 2 }} />
-                    <EditIcon />
-                  </Button>
+                  <Link href={`editTodo?id=${todo.id}`}>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        pl: 5,
+                        mr: 10,
+                        mt: 2,
+                        mb: 2,
+                        background: '#68D391',
+                        '&:hover': { background: '#68D391', opacity: [0.9, 0.8, 0.7] },
+                        borderRadius: 25,
+                        border: 1,
+                        borderColor: 'text.primary',
+                        color: 'black',
+                        fontWeight: 'bold',
+                        fontSize: '20px'
+                      }}
+                    >
+                      <Typography textTransform="none" sx={{ fontWeight: 'bold', fontSize: 18 }}>
+                        Edit
+                      </Typography>
+                      <Box component="span" sx={{ p: 2 }} />
+                      <EditIcon />
+                    </Button>
+                  </Link>
+
                   <Box sx={{ mr: 10, mt: 1.5, mb: 2 }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Create</Typography>
-                    <Typography sx={{ fontWeight: 'bold', fontSize: 23 }}>2020-11-8 18:55</Typography>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
+                      {parseTimestampToDate(todo.create, '-')}
+                    </Typography>
                   </Box>
                   <Box sx={{ mt: 1.5, mb: 2 }}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Update</Typography>
-                    <Typography sx={{ fontWeight: 'bold', fontSize: 23 }}>2020-11-8 18:55</Typography>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
+                      {parseTimestampToDate(todo.update, '-')}
+                    </Typography>
                   </Box>
                 </Box>
               </Box>
@@ -269,8 +308,10 @@ const detail: NextPage = () => {
           </Box>
         </Box>
       </Container>
-    </>
-  )
+    )
+  } else {
+    return <CircularProgress />
+  }
 }
 
-export default detail
+export default Detail
