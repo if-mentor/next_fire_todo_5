@@ -10,6 +10,8 @@ import { parseTimestampToDate } from '../utils/DataFormat'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Todo } from '../types/todo'
+import { useRecoilValue } from 'recoil'
+import { uidState } from '../atoms'
 
 // firestore root directory
 const rootDir = 'todos'
@@ -18,6 +20,7 @@ const EditTodo = () => {
   const [todo, setTodo] = useState<Todo | null>(null)
   const { setMessage, AlertSnackbar } = useSnackbar()
   const router = useRouter()
+  const loginUid = useRecoilValue(uidState)
   const { id } = router.query
 
   useEffect(() => {
@@ -52,7 +55,7 @@ const EditTodo = () => {
           title: todo.title,
           detail: todo.detail,
           update: serverTimestamp(),
-          editor: 'userUID'
+          editor: loginUid
         })
       })().then(() => {
         // Todoリストへ戻る

@@ -33,8 +33,21 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { db } from '../firebaseConfig'
 import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
+import { useRecoilValue } from 'recoil'
+import { isLoginState, uidState } from '../atoms'
+import { useRouter } from 'next/router'
 
 const Home: NextPage = () => {
+  const router = useRouter()
+  const isLogin = useRecoilValue(isLoginState)
+  const loginUid = useRecoilValue(uidState)
+
+  useEffect(() => {
+    if (isLogin === false) {
+      router.push('/welcome')
+    }
+  }, [isLogin])
+
   const [todos, setTodos] = useState([
     {
       id: '',
@@ -68,7 +81,8 @@ const Home: NextPage = () => {
           create: parseTimestampToDate(todo.data().create, '-'),
           update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : '更新中',
           isDraft: todo.data().isDraft,
-          isTrash: todo.data().isTrash
+          isTrash: todo.data().isTrash,
+          author: todo.data().author
         }))
       )
     })
@@ -353,6 +367,7 @@ const Home: NextPage = () => {
             <TableBody>
               {todos.map((todo: any) => {
                 if (
+                  todo.author === loginUid &&
                   todo.title.match(keyword) &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
