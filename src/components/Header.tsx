@@ -13,7 +13,7 @@ export const Header = () => {
   const setUid = useSetRecoilState(uidState)
 
   const clickLogin = () => {
-    router.push("/login")
+    router.push('/login')
   }
 
   const clickLogout = () => {
@@ -49,7 +49,7 @@ export const Header = () => {
           sx={{
             mt: 3,
             mr: 10,
-            ml: "auto",
+            ml: 'auto',
             mb: 2,
             background: '#68D391',
             '&:hover': {
@@ -59,7 +59,7 @@ export const Header = () => {
           }}
           onClick={isLogin ? clickLogout : clickLogin}
         >
-          {isLogin ? "ログアウト" : "ログイン"}
+          {isLogin ? 'ログアウト' : 'ログイン'}
         </Button>
       </Box>
     </>
