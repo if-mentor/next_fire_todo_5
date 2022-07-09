@@ -5,10 +5,16 @@ import Link from 'next/link'
 import { auth } from '../firebaseConfig'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import { isLoginState, uidState } from '../atoms'
+import { useRouter } from 'next/router'
 
 export const Header = () => {
+  const router = useRouter()
   const [isLogin, setIsLogin] = useRecoilState(isLoginState)
   const setUid = useSetRecoilState(uidState)
+
+  const clickLogin = () => {
+    router.push('/login')
+  }
 
   const clickLogout = () => {
     signOut(auth)
@@ -22,7 +28,6 @@ export const Header = () => {
         console.log(error)
       })
   }
-
   return (
     <>
       <Box
@@ -39,33 +44,12 @@ export const Header = () => {
             TODO
           </Typography>
         </Link>
-        <Link href="/login">
-          <Button
-            variant="contained"
-            disabled={isLogin}
-            sx={{
-              mt: 3,
-              mr: 1,
-              ml: 'auto',
-              mb: 2,
-              background: '#68D391',
-              '&:hover': {
-                background: '#68D391',
-                opacity: [0.9, 0.8, 0.7]
-              }
-            }}
-          >
-            ログイン
-          </Button>
-        </Link>
-
         <Button
           variant="contained"
-          disabled={!isLogin}
           sx={{
             mt: 3,
             mr: 10,
-            ml: 1,
+            ml: 'auto',
             mb: 2,
             background: '#68D391',
             '&:hover': {
@@ -73,9 +57,9 @@ export const Header = () => {
               opacity: [0.9, 0.8, 0.7]
             }
           }}
-          onClick={clickLogout}
+          onClick={isLogin ? clickLogout : clickLogin}
         >
-          ログアウト
+          {isLogin ? 'ログアウト' : 'ログイン'}
         </Button>
       </Box>
     </>

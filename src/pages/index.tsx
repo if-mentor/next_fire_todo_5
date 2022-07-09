@@ -33,8 +33,12 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { db } from '../firebaseConfig'
 import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { parseTimestampToDate } from '../utils/DataFormat'
+import { useRecoilValue } from 'recoil'
+import { uidState } from '../atoms'
 
 const Home: NextPage = () => {
+  const loginUid = useRecoilValue(uidState)
+
   const [todos, setTodos] = useState([
     {
       id: '',
@@ -68,7 +72,8 @@ const Home: NextPage = () => {
           create: parseTimestampToDate(todo.data().create, '-'),
           update: todo.data().update ? parseTimestampToDate(todo.data().update, '-') : '更新中',
           isDraft: todo.data().isDraft,
-          isTrash: todo.data().isTrash
+          isTrash: todo.data().isTrash,
+          author: todo.data().author
         }))
       )
     })
@@ -353,6 +358,7 @@ const Home: NextPage = () => {
             <TableBody>
               {todos.map((todo: any) => {
                 if (
+                  todo.author === loginUid &&
                   todo.title.match(keyword) &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
