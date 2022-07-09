@@ -1,21 +1,10 @@
-import React, { useState } from "react"
-import {
-  Avatar,
-  Alert,
-  Button,
-  CssBaseline,
-  TextField,
-  Box,
-  Typography,
-  Container,
-  Grid,
-  Link,
-} from "@mui/material"
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
-import { usePasswordReset } from "../hooks/usePasswordReset"
+import React, { useState } from 'react'
+import { Avatar, Alert, Button, CssBaseline, TextField, Box, Typography, Container, Grid, Link } from '@mui/material'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import { usePasswordReset } from '../hooks/usePasswordReset'
 
 export default function PasswordReset() {
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState('')
   const { success, error, passwordReset } = usePasswordReset()
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,12 +18,12 @@ export default function PasswordReset() {
       <Box
         sx={{
           marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
@@ -51,17 +40,12 @@ export default function PasswordReset() {
             autoComplete="email"
             autoFocus
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             送信
           </Button>
-          <Grid container sx={{ justifyContent: "center" }}>
+          <Grid container sx={{ justifyContent: 'center' }}>
             <Grid item>
               <Link href="login" variant="body2">
                 戻る
@@ -70,12 +54,8 @@ export default function PasswordReset() {
           </Grid>
         </Box>
       </Box>
-      {error && (
-        <Alert severity="error">メールアドレスに送信できませんでした</Alert>
-      )}
-      {success && (
-        <Alert severity="success">メールアドレスに送信しました</Alert>
-      )}
+      {error && <Alert severity="error">メールアドレスに送信できませんでした</Alert>}
+      {success && <Alert severity="success">メールアドレスに送信しました</Alert>}
     </Container>
   )
 }

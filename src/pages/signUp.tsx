@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import {
   Avatar,
@@ -19,11 +19,21 @@ import { createUserWithEmailAndPassword } from 'firebase/auth'
 
 import useSnackbar from '../hooks/useSnackbar'
 import { auth } from '../firebaseConfig'
+import { useRecoilState, useSetRecoilState } from 'recoil'
+import { isLoginState, uidState } from '../atoms'
 
 export default function SignUp() {
   const [isVisible, setIsVisible] = useState(false)
   const { setMessage, AlertSnackbar } = useSnackbar()
   const router = useRouter()
+  const [isLogin, setIsLogin] = useRecoilState(isLoginState)
+  const setUid = useSetRecoilState(uidState)
+
+  useEffect(() => {
+    if (isLogin === true) {
+      router.push('/')
+    }
+  }, [isLogin])
 
   const togglePassword = () => {
     setIsVisible((prevState) => !prevState)
@@ -82,7 +92,9 @@ export default function SignUp() {
 
     // Firebase Authを使い、メールアドレスとパスワードを登録
     createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
+      .then((userCredential) => {
+        setIsLogin(true)
+        setUid(userCredential.user.uid)
         router.push('/')
       })
       .catch((error) => {
