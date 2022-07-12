@@ -276,7 +276,7 @@ const Detail: NextPage = () => {
 
               <Box sx={{ minWidth: 500, position: 'relative', ml: 3}} >
                   <Box component={Paper} height='550px' sx={{ mb: 2, border: 1, borderRadius: 4 }} overflow="scroll">
-                    <Typography width='100%' sx={{ position: 'absolute', top:0, right:0, mb: 2,  borderRadius: 4,  fontSize: '24px', fontWeight: 'bold', background: '#68D391', zIndex: 100 }} >CommentList</Typography>
+                    <Typography width='100%' sx={{ position: 'absolute', top:0, right:0, mb: 2, pl: 2, height: '40px', borderRadius: 1,  fontSize: '24px', fontWeight: 'bold', background: '#68D391', zIndex: 100 }} >CommentList</Typography>
                     <Box sx={{marginBottom: 5}} />
                   {comments.map((comment) => (
                     <ListItem divider key={comment.id}>
