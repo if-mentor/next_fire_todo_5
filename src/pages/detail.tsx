@@ -280,12 +280,12 @@ const Detail: NextPage = () => {
                     <Box sx={{marginBottom: 5}} />
                   {comments.map((comment) => (
                     <ListItem divider key={comment.id}>
-                      <ListItemText sx={{ fontSize: '18px' }}>{comment.detail}</ListItemText>
                       <ListItemText sx={{ fontWeight: 'bold' , minWidth: 50}}>
                         <Gravatar size={40} email="samonkntd@gmail.com" />
                         <br />
                         {comment.name}
                       </ListItemText>
+                      <ListItemText sx={{ fontSize: '18px' }}>{comment.detail}</ListItemText>
                     </ListItem>
                   ))}
                   </Box>
