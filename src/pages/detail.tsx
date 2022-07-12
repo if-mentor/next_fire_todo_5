@@ -274,7 +274,7 @@ const Detail: NextPage = () => {
 
               </Box>
 
-              <Box sx={{ minWidth: 500, position: 'relative'}} >
+              <Box sx={{ minWidth: 500, position: 'relative', ml: 3}} >
                   <Box component={Paper} height='550px' sx={{ mb: 2, border: 1, borderRadius: 4 }} overflow="scroll">
                     <Typography width='100%' sx={{ position: 'absolute', top:0, right:0, mb: 2,  borderRadius: 4,  fontSize: '24px', fontWeight: 'bold', background: '#68D391', zIndex: 100 }} >CommentList</Typography>
                     <Box sx={{marginBottom: 5}} />
