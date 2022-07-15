@@ -271,7 +271,9 @@ const Draft: NextPage = () => {
                 }
               }}
             >
-              <SaveAsIcon sx={icon} />
+              <Link href="/draft">
+                <SaveAsIcon sx={icon} />
+              </Link>
             </Box>
             <Box
               sx={{
