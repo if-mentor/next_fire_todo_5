@@ -141,6 +141,15 @@ const Home: NextPage = () => {
     }
   }
 
+  const [switchTodos, setSwitchTodos] = useState('all')
+  const switchClick = () => {
+    if (switchTodos === 'all') {
+      setSwitchTodos('my todo')
+    } else {
+      setSwitchTodos('all')
+    }
+  }
+
   return (
     <>
       <Container
@@ -223,7 +232,7 @@ const Home: NextPage = () => {
             </FormControl>
           </Box>
           <Box
-            mr={3}
+            mr={2}
             sx={{
               width: '190px',
               display: 'flex',
@@ -232,6 +241,19 @@ const Home: NextPage = () => {
             }}
           >
             <ResetBtn onClick={resetClick}>RESET</ResetBtn>
+          </Box>
+          <Box
+            mr={3}
+            sx={{
+              width: '350px',
+              display: 'flex',
+              alignItems: 'flex-end',
+              marginBottom: '8px'
+            }}
+          >
+            <ResetBtn onClick={switchClick} sx={{ background: '#78D2E3', '&:hover': { background: '#78C2E3' } }}>
+              {switchTodos === 'all' ? '自分のTodoのみを表示' : '全てのTodoを表示'}
+            </ResetBtn>
           </Box>
           <Box sx={{ display: 'flex' }}>
             <Box
@@ -369,7 +391,7 @@ const Home: NextPage = () => {
             <TableBody>
               {todos.map((todo: any) => {
                 if (
-                  todo.author === loginUid &&
+                  (switchTodos === 'my todo' ? todo.author === loginUid : true) &&
                   todo.title.match(keyword) &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
