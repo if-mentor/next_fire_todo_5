@@ -141,12 +141,12 @@ const Home: NextPage = () => {
     }
   }
 
-  const [switchTodos, setSwitchTodos] = useState("all")
+  const [switchTodos, setSwitchTodos] = useState('all')
   const switchClick = () => {
-    if (switchTodos === "all") {
-      setSwitchTodos("my todo")
+    if (switchTodos === 'all') {
+      setSwitchTodos('my todo')
     } else {
-      setSwitchTodos("all")
+      setSwitchTodos('all')
     }
   }
 
@@ -251,7 +251,9 @@ const Home: NextPage = () => {
               marginBottom: '8px'
             }}
           >
-            <ResetBtn onClick={switchClick} sx={{ background: "#78D2E3", "&:hover": {background: "#78C2E3"}}}>{switchTodos === "all" ? "自分のTodoのみを表示" : "全てのTodoを表示"}</ResetBtn>
+            <ResetBtn onClick={switchClick} sx={{ background: '#78D2E3', '&:hover': { background: '#78C2E3' } }}>
+              {switchTodos === 'all' ? '自分のTodoのみを表示' : '全てのTodoを表示'}
+            </ResetBtn>
           </Box>
           <Box sx={{ display: 'flex' }}>
             <Box
@@ -389,7 +391,7 @@ const Home: NextPage = () => {
             <TableBody>
               {todos.map((todo: any) => {
                 if (
-                  (switchTodos === "my todo" ? todo.author === loginUid : true) &&
+                  (switchTodos === 'my todo' ? todo.author === loginUid : true) &&
                   todo.title.match(keyword) &&
                   (filteringStatus === todo.status || filteringStatus === 'NONE') &&
                   (filteringPriority === todo.priority || filteringPriority === 'None')
