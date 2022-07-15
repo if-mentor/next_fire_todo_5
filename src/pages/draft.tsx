@@ -511,3 +511,4 @@ const icon = {
 }
 
 export default Draft
+

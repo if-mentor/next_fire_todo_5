@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
   CssBaseline,
+  Drawer,
   ListItem,
   ListItemText,
   Paper,
@@ -46,13 +47,12 @@ import Gravatar from 'react-gravatar'
 
 const Detail: NextPage = () => {
   const [todo, setTodo] = useState<Todo | null>(null)
-  const randomId = Math.random().toString(32).substring(2)
+  let randomId = Math.random().toString(32).substring(2)
   const [open, setOpen] = useState(false)
   const [openList, setOpenList] = useState(false)
   const router = useRouter()
   const { id } = router.query
-  const user = auth.currentUser
-
+  const user = auth.currentUser;
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
       return
@@ -63,17 +63,17 @@ const Detail: NextPage = () => {
     {
       id: randomId,
       name: '',
-      detail: ''
+      detail: '',
     }
   ])
-  const q = query(collection(db, 'comments'), orderBy('create'))
+  const q = query(collection(db, 'comments'),orderBy('create'))
   useEffect(() => {
     const unSub = onSnapshot(q, (querySnapshot) => {
       setComments(
         querySnapshot.docs.map((comment) => ({
           id: comment.data().id,
           name: comment.data().name,
-          detail: comment.data().detail
+          detail: comment.data().detail,
         }))
       )
     })
@@ -94,10 +94,10 @@ const Detail: NextPage = () => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
     const colRef = collection(db, 'comments')
-    if (data.get('comment') === '') {
+    if (data.get('comment')  === '') {
       setOpen(true)
       return
-    } else if (data.get('name') === '') {
+    } else if(data.get('name')  === ''){
       setOpen(true)
       return
     }
@@ -108,7 +108,7 @@ const Detail: NextPage = () => {
         name: data.get('name'),
         detail: data.get('detail'),
         create: serverTimestamp(),
-        author: 'userUID'
+        author: 'userUID',
       })
       const q = await query(collection(db, 'comments'), where('id', '==', 'yet'))
       const querySnapshot = await getDocs(q)
@@ -118,20 +118,20 @@ const Detail: NextPage = () => {
       })
     }
     firestoreSubmit()
-  }
+}
 
   if (todo != null) {
     return (
-      <>
-        <Snackbar open={open} autoHideDuration={6000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-          <Alert onClose={handleClose} severity="error">
-            nameまたはcommentが入力されていません。
-          </Alert>
-        </Snackbar>
-        <Container component="main" maxWidth="xl">
-          <CssBaseline />
-          <Box className="big">
-            <Box sx={{ textAlign: 'right', marginLeft: 'auto' }}>
+    <>
+      <Snackbar open={open} autoHideDuration={6000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={handleClose} severity="error">
+          nameまたはcommentが入力されていません。
+        </Alert>
+      </Snackbar>
+      <Container component="main" maxWidth="xl">
+        <CssBaseline />
+        <Box className="big">
+          <Box sx={{ textAlign: 'right', marginLeft: 'auto' }}>       
               <Button
                 variant="contained"
                 sx={{
@@ -181,7 +181,7 @@ const Detail: NextPage = () => {
             </Box>
             <Box>
               <Box sx={{ display: 'flex' }}>
-                <Box sx={{ border: 1, borderRadius: 4, p: 2 }}>
+                <Box sx={{ position: 'relative', border: 1, borderRadius: 4, p: 2 }}>
                   <TableContainer>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                       <TableHead>
@@ -255,159 +255,46 @@ const Detail: NextPage = () => {
                         <EditIcon />
                       </Button>
                     </Link>
-
-                    <Box sx={{ mr: 10, mt: 1.5, mb: 2 }}>
-                      <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Create</Typography>
-                      <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
-                        {parseTimestampToDate(todo.create, '-')}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mt: 1.5, mb: 2 }}>
-                      <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Update</Typography>
-                      <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
-                        {parseTimestampToDate(todo.update, '-')}
-                      </Typography>
-                    </Box>
+                  <Box sx={{ mr: 10, mt: 1.5, mb: 2 }}>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Create</Typography>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
+                      {parseTimestampToDate(todo.create, '-')}
+                    </Typography>
                   </Box>
+                  <Box sx={{ mt: 1.5, mb: 2 }}>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>Update</Typography>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
+                      {parseTimestampToDate(todo.update, '-')}
+                    </Typography>
+                  </Box>
+
                 </Box>
 
-                <Box component="span" sx={{ p: 2 }} />
+                <Box component="span" sx={{ justifyContent: 'left' }} />
 
-                <Box>
-                  <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell
-                            sx={{
-                              fontSize: '24px',
-                              fontWeight: 'bold',
-                              background: '#008753',
-                              display: 'flex',
-                              color: '#FFF'
-                            }}
-                          >
-                            Task
-                            <Typography sx={{ ml: 50, fontWeight: 'bold', fontSize: 18, color: '#FFF' }}>
-                              2020-11-8 18:55
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            aaaa
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell
-                            sx={{
-                              fontSize: '24px',
-                              fontWeight: 'bold',
-                              background: '#008753',
-                              display: 'flex',
-                              color: '#FFF'
-                            }}
-                          >
-                            Task
-                            <Typography sx={{ ml: 50, fontWeight: 'bold', fontSize: 18, color: '#FFF' }}>
-                              2020-11-8 18:55
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            aaaa
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <TableContainer component={Paper} sx={{ mb: 2, border: 1, borderRadius: 4 }}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell
-                            sx={{
-                              fontSize: '24px',
-                              fontWeight: 'bold',
-                              background: '#008753',
-                              display: 'flex',
-                              color: '#FFF'
-                            }}
-                          >
-                            Task
-                            <Typography sx={{ ml: 50, fontWeight: 'bold', fontSize: 18, color: '#FFF' }}>
-                              2020-11-8 18:55
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            aaaa
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <TableContainer component={Paper} sx={{ border: 1, borderRadius: 4 }}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell
-                            sx={{
-                              fontSize: '24px',
-                              fontWeight: 'bold',
-                              background: '#008753',
-                              display: 'flex',
-                              color: '#FFF'
-                            }}
-                          >
-                            Task
-                            <Typography sx={{ ml: 50, fontWeight: 'bold', fontSize: 18, color: '#FFF' }}>
-                              2020-11-8 18:55
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            aaaa
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
               </Box>
+
+              <Box sx={{ minWidth: 500, position: 'relative', ml: 3}} >
+                  <Box component={Paper} height='550px' sx={{ mb: 2, border: 1, borderRadius: 4 }} overflow="scroll">
+                    <Typography width='100%' sx={{ position: 'absolute', top:0, right:0, mb: 2, pl: 2, height: '40px', borderRadius: 1,  fontSize: '24px', fontWeight: 'bold', background: '#68D391', zIndex: 100 }} >CommentList</Typography>
+                    <Box sx={{marginBottom: 5}} />
+                  {comments.map((comment) => (
+                    <ListItem divider key={comment.id}>
+                      <ListItemText sx={{ fontWeight: 'bold' , minWidth: 50}}>
+                        <Gravatar size={40} email="samonkntd@gmail.com" />
+                        <br />
+                        {comment.name}
+                      </ListItemText>
+                      <ListItemText sx={{ fontSize: '18px' }}>{comment.detail}</ListItemText>
+                    </ListItem>
+                  ))}
+                  </Box>
+                  </Box>
             </Box>
 
+
             <Box sx={{ marginTop: '3em' }}>
-              <Typography sx={{ fontSize: '24px', fontWeight: 'bold', background: '#68D391' }}>CommentList</Typography>
-              {comments.map((comment) => (
-                <ListItem divider key={comment.id}>
-                  <ListItemText sx={{ fontSize: '18px' }}>{comment.detail}</ListItemText>
-                  <ListItemText sx={{ fontWeight: 'bold' }}>
-                    <Gravatar size={40} email="samonkntd@gmail.com" />
-                    <br />
-                    {comment.name}
-                  </ListItemText>
-                </ListItem>
-              ))}
-            </Box>
-            <Box sx={{ marginTop: '3em' }}>
+ 
               <Box
                 sx={{
                   marginTop: 8,
@@ -416,11 +303,14 @@ const Detail: NextPage = () => {
                   alignItems: 'center'
                 }}
               >
+                
                 <Box
                   sx={{
                     marginLeft: 85
                   }}
-                ></Box>
+                >
+
+                </Box>
                 <Box
                   sx={{
                     alignItems: 'left'
@@ -495,7 +385,8 @@ const Detail: NextPage = () => {
               </Box>
             </Box>
           </Box>
-        </Container>
+        </Box>
+      </Container>
       </>
     )
   } else {
