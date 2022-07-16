@@ -320,7 +320,7 @@ const Home: NextPage = () => {
             </Box>
           </Box>
         </Box>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ marginBottom: '20px' }}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow sx={{ background: '#68D391' }}>
