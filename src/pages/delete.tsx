@@ -22,13 +22,25 @@ import { parseTimestampToDate } from '../utils/DataFormat'
 import useFirebase from '../hooks/useFirebase'
 import useDialog, { ConfirmDialogType } from '../hooks/useDialog'
 import { Todo } from '../types/todo'
+import { useRecoilValue } from 'recoil'
+import { isLoginState, uidState } from '../atoms'
 
 const Delete: NextPage = () => {
+  const router = useRouter()
+  const isLogin = useRecoilValue(isLoginState)
+  const loginUid = useRecoilValue(uidState)
+
+  useEffect(() => {
+    if (isLogin === false) {
+      router.push('/welcome')
+    }
+  }, [isLogin])
+  
   const [dialog, setDialog] = useState<keyof ConfirmDialogType | null>(null)
   const [todos, setTodos] = useState<Array<Todo> | null>(null)
-  const router = useRouter()
   const { deleteData, restoreData } = useFirebase()
   const { ConfirmDialog } = useDialog()
+  
 
   useEffect(() => {
     const q = query(collection(db, 'todos'), where('isTrash', '==', true), orderBy('create'))
@@ -186,8 +198,10 @@ const Delete: NextPage = () => {
                   </TableHead>
                   <TableBody>
                     {todos !== null &&
-                      todos.map((todo) => (
-                        <TableRow key={todo.id}>
+                      todos.map((todo) => {
+                        if (todo.author === loginUid) {
+                          return (
+                            <TableRow key={todo.id}>
                           <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
                             {todo.title}
                           </TableCell>
@@ -251,7 +265,10 @@ const Delete: NextPage = () => {
                             </Button>
                           </TableCell>
                         </TableRow>
-                      ))}
+                          )
+                        }
+                      }
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
