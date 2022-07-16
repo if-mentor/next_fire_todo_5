@@ -489,9 +489,6 @@ const Home: NextPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Box mt={6} mb={3} sx={{ textAlign: 'center' }}>
-          <Pagination count={10} size="large" variant="outlined" shape="rounded" sx={{ display: 'inline-block' }} />
-        </Box>
       </Container>
     </>
   )
