@@ -35,12 +35,11 @@ const Delete: NextPage = () => {
       router.push('/welcome')
     }
   }, [isLogin])
-  
+
   const [dialog, setDialog] = useState<keyof ConfirmDialogType | null>(null)
   const [todos, setTodos] = useState<Array<Todo> | null>(null)
   const { deleteData, restoreData } = useFirebase()
   const { ConfirmDialog } = useDialog()
-  
 
   useEffect(() => {
     const q = query(collection(db, 'todos'), where('isTrash', '==', true), orderBy('create'))
@@ -202,73 +201,77 @@ const Delete: NextPage = () => {
                         if (todo.author === loginUid) {
                           return (
                             <TableRow key={todo.id}>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            {todo.title}
-                          </TableCell>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            <Button
-                              variant="contained"
-                              sx={{
-                                background: '#f0fff4',
-                                '&:hover': { background: '#fff', opacity: [0.9, 0.8, 0.7] },
-                                borderRadius: 25,
-                                border: 1,
-                                borderColor: 'text.primary',
-                                color: 'black',
-                                fontWeight: 'bold',
-                                fontSize: 8
-                              }}
-                            >
-                              NOT STARTED
-                            </Button>
-                          </TableCell>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold', color: '#9a5656' }}>
-                              {todo.priority}
-                            </Typography>
-                          </TableCell>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
-                              {parseTimestampToDate(todo.create, '-')}
-                            </Typography>
-                          </TableCell>
-                          <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
-                            <Button
-                              variant="contained"
-                              sx={{
-                                mr: 1,
-                                background: '#ec7272',
-                                '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
-                                borderRadius: 25,
-                                borderColor: 'text.primary',
-                                fontWeight: 'bold',
-                                fontSize: 11
-                              }}
-                              onClick={() => deleteTodo(todo.id)}
-                            >
-                              Delete
-                            </Button>
-                            <Button
-                              variant="contained"
-                              sx={{
-                                mr: 1,
-                                background: '#62b1ea',
-                                '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
-                                borderRadius: 25,
-                                borderColor: 'text.primary',
-                                fontWeight: 'bold',
-                                fontSize: 11
-                              }}
-                              onClick={() => restoreTodo(todo.id)}
-                            >
-                              Restore
-                            </Button>
-                          </TableCell>
-                        </TableRow>
+                              <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                {todo.title}
+                              </TableCell>
+                              <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                <Button
+                                  variant="contained"
+                                  sx={{
+                                    background: '#f0fff4',
+                                    '&:hover': { background: '#fff', opacity: [0.9, 0.8, 0.7] },
+                                    borderRadius: 25,
+                                    border: 1,
+                                    borderColor: 'text.primary',
+                                    color: 'black',
+                                    fontWeight: 'bold',
+                                    fontSize: 8
+                                  }}
+                                >
+                                  NOT STARTED
+                                </Button>
+                              </TableCell>
+                              <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                <Typography
+                                  component="p"
+                                  variant="h6"
+                                  mb={2}
+                                  sx={{ fontWeight: 'bold', color: '#9a5656' }}
+                                >
+                                  {todo.priority}
+                                </Typography>
+                              </TableCell>
+                              <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                <Typography component="p" variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
+                                  {parseTimestampToDate(todo.create, '-')}
+                                </Typography>
+                              </TableCell>
+                              <TableCell component="th" scope="row" sx={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                <Button
+                                  variant="contained"
+                                  sx={{
+                                    mr: 1,
+                                    background: '#ec7272',
+                                    '&:hover': { background: '#ec7171', opacity: [0.9, 0.8, 0.7] },
+                                    borderRadius: 25,
+                                    borderColor: 'text.primary',
+                                    fontWeight: 'bold',
+                                    fontSize: 11
+                                  }}
+                                  onClick={() => deleteTodo(todo.id)}
+                                >
+                                  Delete
+                                </Button>
+                                <Button
+                                  variant="contained"
+                                  sx={{
+                                    mr: 1,
+                                    background: '#62b1ea',
+                                    '&:hover': { background: '#62bcca', opacity: [0.9, 0.8, 0.7] },
+                                    borderRadius: 25,
+                                    borderColor: 'text.primary',
+                                    fontWeight: 'bold',
+                                    fontSize: 11
+                                  }}
+                                  onClick={() => restoreTodo(todo.id)}
+                                >
+                                  Restore
+                                </Button>
+                              </TableCell>
+                            </TableRow>
                           )
                         }
-                      }
-                    )}
+                      })}
                   </TableBody>
                 </Table>
               </TableContainer>
