@@ -40,9 +40,11 @@ export const Header = () => {
         }}
       >
         <Link href="/">
-          <Typography component="h1" style={{ fontSize: '48px', marginLeft: '60px' }}>
-            TODO
-          </Typography>
+          <a>
+            <Typography component="h1" style={{ fontSize: '48px', marginLeft: '60px' }}>
+              TODO
+            </Typography>
+          </a>
         </Link>
         <Button
           variant="contained"

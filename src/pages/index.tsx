@@ -272,7 +272,9 @@ const Home: NextPage = () => {
               }}
             >
               <Link href="/delete">
-                <RestoreFromTrashOutlinedIcon sx={icon} />
+                <a>
+                  <RestoreFromTrashOutlinedIcon sx={icon} />
+                </a>
               </Link>
             </Box>
             <Box
@@ -291,7 +293,9 @@ const Home: NextPage = () => {
               }}
             >
               <Link href="/draft">
-                <SaveAsIcon sx={icon} />
+                <a>
+                  <SaveAsIcon sx={icon} />
+                </a>
               </Link>
             </Box>
             <Box
@@ -309,7 +313,9 @@ const Home: NextPage = () => {
               }}
             >
               <Link href="/createTodo">
-                <OpenInNewIcon sx={icon} />
+                <a>
+                  <OpenInNewIcon sx={icon} />
+                </a>
               </Link>
             </Box>
           </Box>
@@ -483,9 +489,6 @@ const Home: NextPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Box mt={6} mb={3} sx={{ textAlign: 'center' }}>
-          <Pagination count={10} size="large" variant="outlined" shape="rounded" sx={{ display: 'inline-block' }} />
-        </Box>
       </Container>
     </>
   )
@@ -508,12 +511,6 @@ const ResetBtn = styled('button')({
 })
 
 const icon = {
-  positon: 'absolute',
-  top: '0',
-  right: '0',
-  left: '0',
-  bottom: '0',
-  margin: 'auto',
   width: '100%',
   height: '100%'
 }
